@@ -5,21 +5,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Working Title</title>
-    <script src="index.js" defer></script>
+    <script src="src/index.js" defer></script>
   </head>
   <body>
-    <div id="Page-headers">
+    <div id="page-headers">
       <h1>Working Title</h1>
       <h2>Sub-heading- hook</h2>
     </div>
 
-    <div id="Dropdown-menus">
+    <div id="dropdown-lists">
       <div id="continent-selector">
-        <label for="continents">Choose a continent:</label>
-
+        <label for="continents"></label>
         <select name="continents" id="continents">
-          <option value="north-america">North America</option>
+          <option value="Choose a continent" disabled selected>Choose a continent:</option>
         </select>
+
+
       </div>
     </div>
   </body>
