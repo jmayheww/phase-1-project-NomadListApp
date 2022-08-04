@@ -6,9 +6,9 @@ const continentAbbreviations = {
   Antarctica: "AN",
   Asia: "AS",
   Europe: "EU",
-  North_America: "NA",
+  "North America": "NA",
   Oceania: "OC",
-  South_America: "SA",
+  "South America": "SA",
 };
 
 const dropdownContainer = document.querySelector("#dropdown-lists");
@@ -36,38 +36,52 @@ function filterContinentData(apiData) {
     (cont) => cont.name
   );
 
-  createSelectorList(continentList, selectContinent);
+  createAppendOptions(continentList, selectContinent);
 }
 
 function createCountryList(apiData) {
-  const countrySelectorContainer = document.createElement("div");
-  const selectorLabel = document.createElement("label");
   const selectCountry = document.createElement("select");
-  const defaultOption = document.createElement("option");
 
-  defaultOption.innerHTML = "Choose a country";
-  defaultOption.disabled = true;
-  defaultOption.selected = true;
-
-  selectorLabel.setAttribute("for", "countries");
-  selectCountry.id = "countries";
-
-  dropdownContainer.append(countrySelectorContainer);
-  countrySelectorContainer.append(selectorLabel);
-  selectorLabel.append(selectCountry);
-  selectCountry.appendChild(defaultOption);
-
+  createDropdown("country", "countries", selectCountry);
 
   const countryList = apiData._links["country:items"].map(
     (country) => country.name
   );
 
-  createSelectorList(countryList, selectCountry);
+  createAppendOptions(countryList, selectCountry);
+
+  // Add Event Listener to Newly Created Country List
+
+  // selectCountry.addEventListener("change", createCitySelection);
 }
 
-// Create Select List for Continents
+function createCitySelection(apiData) {
+  createDropdown();
+}
 
-function createSelectorList(data, parentEl) {
+// Create New Select Dropdown Lists
+
+function createDropdown(target, id, selectEl) {
+  const selectorContainer = document.createElement("div");
+  const selectorLabel = document.createElement("label");
+  const defaultOption = document.createElement("option");
+
+  defaultOption.innerHTML = `Choose a ${target}`;
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+
+  selectorLabel.setAttribute("for", id);
+  selectEl.id = id;
+
+  dropdownContainer.append(selectorContainer);
+  selectorContainer.append(selectorLabel);
+  selectorLabel.append(selectEl);
+  selectEl.appendChild(defaultOption);
+}
+
+// Create and Append Dropdown Selector Options
+
+function createAppendOptions(data, parentEl) {
   data.forEach((datum) => {
     let option = document.createElement("option");
 
@@ -82,7 +96,6 @@ function createSelectorList(data, parentEl) {
 selectContinent.addEventListener("change", (event) => {
   const continentSelection = event.target.value;
 
-  //   "https://api.teleport.org/api/continents/geonames:AF/countries/"
   const countryListURL = `continents/geonames:${continentAbbreviations[continentSelection]}/countries`;
 
   getAPIData(countryListURL, createCountryList);
