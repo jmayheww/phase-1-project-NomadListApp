@@ -53,7 +53,7 @@ const parseAPIData = {
   continent: (data) =>
     data["_links"]["continent:items"].map((location) => location.name),
   country: (data) =>
-    data["_links"]["continent:items"].map((location) => location.name),
+    data["_links"]["country:items"].map((location) => location.name),
   city: (data) =>
     data["_embedded"]["city:search-results"].map((location) => {
       return location["_embedded"]["city:item"].name;
@@ -79,6 +79,9 @@ function resetDropDownOptions(dropdown) {
 }
 
 function renderLocationData(list, dropDown) {
+  console.log('dropDown: ', dropDown);
+  console.log('list: ', list);
+
   dropDown.parentElement.classList.remove("hide");
   createAppendOptions(list, dropDown);
 }
@@ -98,13 +101,21 @@ continentDropDown.addEventListener("change", (event) => {
 });
 
 countryDropDown.addEventListener("change", (event) => {
+
   const countrySelection = event.target.value;
 
-  getAPIData(getAPIURL.city(countrySelection)).then((data) => {
-    const cityList = parseAPIData.city(data);
 
-    resetDropDownOptions(cityDropDown);
-    renderLocationData(cityList, cityDropDown);
-  })
-  .catch((err) => console.log("Error fetching cities!: ", err.message));
+  const citiesURL = getAPIURL.city(countrySelection);
+
+
+  getAPIData(citiesURL)
+    .then((data) => {
+
+      const cityList = parseAPIData.city(data);
+      cityList.sort();
+
+      resetDropDownOptions(cityDropDown);
+      renderLocationData(cityList, cityDropDown);
+    })
+    .catch((err) => console.log("Error fetching cities!: ", err.message));
 });
