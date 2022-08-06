@@ -18,8 +18,14 @@ const selectContinent = document.querySelector("#continents");
 // DOM Interactions ----------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   getAPIData("continents", filterContinentData);
+  fetchCity();
 });
 
+function fetchCity() {
+  fetch("https://api.teleport.org/api/cities/?search=Vietnam")
+  .then(resp => resp.json())
+  .then(data => console.log(data));
+}
 // Asynchronous Functions: Fetch Data from API --------------------------------------------
 function getAPIData(strDirectory, callbackFun) {
   fetch(`${rootURL}/${strDirectory}/`)
@@ -28,16 +34,16 @@ function getAPIData(strDirectory, callbackFun) {
       callbackFun(data);
     });
 }
-function getData(strDirectory, location) {
-  return fetch(`${rootURL}/${strDirectory}/`)
-  .then((resp) => resp.json())
-  .then((data) => {
-    return data["_links"][`${location}:items`]
-  })
-}
+// function getData(strDirectory, location) {
+//   return fetch(`${rootURL}/${strDirectory}/`)
+//   .then((resp) => resp.json())
+//   .then((data) => {
+//     return data["_links"][`${location}:items`]
+//   })
+// }
 
 
-console.log('getData: ', getData("continents/geonames:AF/countries", "country"));
+// console.log('getData: ', getData("continents/geonames:AF/countries", "country"));
 // Handle API Data ------------------------------------------------------------------------
 
 function filterContinentData(apiData) {
@@ -97,15 +103,15 @@ function createCitySelection(apiData) {
 // Create New Select Dropdown Lists -------------------------------------------------------------------------------
 
 function createDropdown(target, id, selectEl) {
-  const currentDropdowns = [];
-  const currentDropdownSelectors = document
-    .querySelectorAll(".selectors")
-    .forEach((x) => {
-      currentDropdowns.push(x.id);
-    });
+  // const currentDropdowns = [];
+  // const currentDropdownSelectors = document
+  //   .querySelectorAll(".selectors")
+  //   .forEach((x) => {
+  //     currentDropdowns.push(x.id);
+  //   });
 
-  console.log("currentDropdowns: ", currentDropdowns);
-  if (!currentDropdowns.includes(id)) {
+  // console.log("currentDropdowns: ", currentDropdowns);
+  // if (!currentDropdowns.includes(id)) {
     const selectorContainer = document.createElement("div");
     const selectorLabel = document.createElement("label");
     const defaultOption = document.createElement("option");
@@ -123,7 +129,7 @@ function createDropdown(target, id, selectEl) {
     selectorLabel.append(selectEl);
     selectEl.appendChild(defaultOption);
   }
-}
+
 
 // Create and Append Dropdown Selector Options ------------------------------------------------------------------------
 // arrStr must be clean, clear array containing strings
