@@ -1,4 +1,4 @@
-// ----------------VARIABLES-------------------------
+// -------------------------------------------VARIABLES-------------------------
 
 const rootURL = "https://api.teleport.org/api";
 
@@ -12,7 +12,7 @@ const ISO_Map = {
   "South America": "SA",
 };
 
-// ----------------DOM-VARIABLES----------------------------
+// -----------------------------------------DOM-VARIABLES----------------------------
 
 const continentWrapper = document.querySelector("#continent-wrapper");
 const countryWrapper = document.querySelector("#country-wrapper");
@@ -22,19 +22,18 @@ const continentDropDown = document.querySelector("#continents");
 const countryDropDown = document.querySelector("#countries");
 const cityDropDown = document.querySelector("#cities");
 
-// ------------------------DOM LOADED--------------------------------
+// ------------------------------------------DOM LOADED--------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
   getAPIData(getAPIURL.continent())
     .then((data) => {
-      const continentList = parseAPIData(data, "continent");
+      const continentList = parseAPIData.continent(data);
       renderLocationData(continentList, continentDropDown);
     })
     .catch((err) => console.log("Error fetching continents: ", err.message));
 });
 
-// -------------------API-----------------------
-// ---------------------------------------------
+// -------------------------------------------API---------------------------------------------------
 
 const getAPIURL = {
   continent: () => `${rootURL}/continents`,
@@ -60,11 +59,6 @@ const parseAPIData = {
       return location["_embedded"]["city:item"].name;
     }),
 };
-
-// ------------------------- Methods ---------------------------------
-// ------------------------- Handle API Data -------------------------
-
-function parseCityData(data) {}
 
 // DOM MANPIPULATION -------------------------------------------------------
 
@@ -96,7 +90,7 @@ continentDropDown.addEventListener("change", (event) => {
 
   getAPIData(getAPIURL.country(continentSelection))
     .then((data) => {
-      const countryList = parseAPIData(data, "country");
+      const countryList = parseAPIData.country(data);
       resetDropDownOptions(countryDropDown);
       renderLocationData(countryList, countryDropDown);
     })
@@ -107,9 +101,10 @@ countryDropDown.addEventListener("change", (event) => {
   const countrySelection = event.target.value;
 
   getAPIData(getAPIURL.city(countrySelection)).then((data) => {
-    console.log("data: ", data);
+    const cityList = parseAPIData.city(data);
 
-    const cityList = parseCityData(data);
-    console.log("cityList: ", cityList);
-  });
+    resetDropDownOptions(cityDropDown);
+    renderLocationData(cityList, cityDropDown);
+  })
+  .catch((err) => console.log("Error fetching cities!: ", err.message));
 });
