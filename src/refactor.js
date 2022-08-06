@@ -12,16 +12,6 @@ const ISO_Map = {
   "South America": "SA",
 };
 
-const getAPIURL = {
-  continent: () => `${rootURL}/continents`,
-
-  country: (continent) =>
-    `${rootURL}/continents/geonames:${ISO_Map[continent]}/countries`,
-
-  city: (country) =>
-    `${rootURL}/cities?search=${country}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`,
-};
-
 // ----------------DOM-VARIABLES----------------------------
 
 const continentWrapper = document.querySelector("#continent-wrapper");
@@ -35,7 +25,7 @@ const cityDropDown = document.querySelector("#cities");
 // ------------------------DOM LOADED--------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  getAPIData(continentDirectory)
+  getAPIData(getAPIURL.continent())
     .then((data) => {
       const continentList = parseAPIData(data, "continent");
       renderLocationData(continentList, continentDropDown);
@@ -43,28 +33,39 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch((err) => console.log("Error fetching continents: ", err.message));
 });
 
-// -------------------Asynchronous Functions-----------------------
-// -------------------Fetch Data From External API------------
+// -------------------API-----------------------
+// ---------------------------------------------
+
+const getAPIURL = {
+  continent: () => `${rootURL}/continents`,
+
+  country: (continent) =>
+    `${rootURL}/continents/geonames:${ISO_Map[continent]}/countries`,
+
+  city: (country) =>
+    `${rootURL}/cities?search=${country}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`,
+};
 
 function getAPIData(URL) {
   return fetch(URL).then((resp) => resp.json());
 }
 
+const parseAPIData = {
+  continent: (data) =>
+    data["_links"]["continent:items"].map((location) => location.name),
+  country: (data) =>
+    data["_links"]["continent:items"].map((location) => location.name),
+  city: (data) =>
+    data["_embedded"]["city:search-results"].map((location) => {
+      return location["_embedded"]["city:item"].name;
+    }),
+};
+
 // ------------------------- Methods ---------------------------------
 // ------------------------- Handle API Data -------------------------
 
-function parseAPIData(data, locationType) {
-  const locationList = data["_links"][`${locationType}:items`].map(
-    (location) => location.name
-  );
-  return locationList;
-}
+function parseCityData(data) {}
 
-function parseCityData(data) {
-  const cityList = `${data}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`;
-  console.log(cityList);
-  return cityList;
-}
 // DOM MANPIPULATION -------------------------------------------------------
 
 function createAppendOptions(optList, parentEl) {
@@ -92,8 +93,8 @@ function renderLocationData(list, dropDown) {
 
 continentDropDown.addEventListener("change", (event) => {
   const continentSelection = event.target.value;
-  const countryURLString = `${countryDirectory}${ISO_Map[continentSelection]}/countries`;
-  getAPIData(countryURLString)
+
+  getAPIData(getAPIURL.country(continentSelection))
     .then((data) => {
       const countryList = parseAPIData(data, "country");
       resetDropDownOptions(countryDropDown);
@@ -104,9 +105,8 @@ continentDropDown.addEventListener("change", (event) => {
 
 countryDropDown.addEventListener("change", (event) => {
   const countrySelection = event.target.value;
-  const cityURLString = `${cityDirectory}${countrySelection}`;
 
-  getAPIData(cityURLString).then((data) => {
+  getAPIData(getAPIURL.city(countrySelection)).then((data) => {
     console.log("data: ", data);
 
     const cityList = parseCityData(data);
