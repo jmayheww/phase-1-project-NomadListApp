@@ -1,9 +1,6 @@
 // ----------------VARIABLES-------------------------
 
 const rootURL = "https://api.teleport.org/api";
-const continentDirectory = `${rootURL}/continents`;
-const countryDirectory = `${rootURL}/continents/geonames:`;
-const cityDirectory = `${rootURL}/cities?search=`;
 
 const ISO_Map = {
   Africa: "AF",
@@ -13,6 +10,16 @@ const ISO_Map = {
   "North America": "NA",
   Oceania: "OC",
   "South America": "SA",
+};
+
+const getAPIURL = {
+  continent: () => `${rootURL}/continents`,
+
+  country: (continent) =>
+    `${rootURL}/continents/geonames:${ISO_Map[continent]}/countries`,
+
+  city: (country) =>
+    `${rootURL}/cities?search=${country}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`,
 };
 
 // ----------------DOM-VARIABLES----------------------------
@@ -50,10 +57,14 @@ function parseAPIData(data, locationType) {
   const locationList = data["_links"][`${locationType}:items`].map(
     (location) => location.name
   );
-
   return locationList;
 }
 
+function parseCityData(data) {
+  const cityList = `${data}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`;
+  console.log(cityList);
+  return cityList;
+}
 // DOM MANPIPULATION -------------------------------------------------------
 
 function createAppendOptions(optList, parentEl) {
@@ -66,14 +77,13 @@ function createAppendOptions(optList, parentEl) {
 
 function resetDropDownOptions(dropdown) {
   const defaultOption = dropdown.children[0];
-  console.log("defaultOption: ", defaultOption);
+
   defaultOption.selected = true;
   dropdown.innerHTML = "";
   dropdown.append(defaultOption);
 }
 
 function renderLocationData(list, dropDown) {
-  console.log('dropDown: ', dropDown);
   dropDown.parentElement.classList.remove("hide");
   createAppendOptions(list, dropDown);
 }
@@ -90,4 +100,16 @@ continentDropDown.addEventListener("change", (event) => {
       renderLocationData(countryList, countryDropDown);
     })
     .catch((err) => console.log("Error fetching countries!: ", err.message));
+});
+
+countryDropDown.addEventListener("change", (event) => {
+  const countrySelection = event.target.value;
+  const cityURLString = `${cityDirectory}${countrySelection}`;
+
+  getAPIData(cityURLString).then((data) => {
+    console.log("data: ", data);
+
+    const cityList = parseCityData(data);
+    console.log("cityList: ", cityList);
+  });
 });
