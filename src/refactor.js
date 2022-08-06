@@ -14,50 +14,78 @@ const ISO_Map = {
   Oceania: "OC",
   "South America": "SA",
 };
-// const citydirectory = `${rootURL}`/
 
 // ----------------DOM-VARIABLES----------------------------
 
-const dropdownContainer = document.querySelector("#dropdown-lists");
-const continentContainer = document.querySelector("#continent-selector");
-const selectContinent = document.querySelector("#continents");
-const selectCountry = document.querySelector("#countries");
+const continentWrapper = document.querySelector("#continent-wrapper");
+const countryWrapper = document.querySelector("#country-wrapper");
+const cityWrapper = document.querySelector("#city-wrapper");
 
-/* Create object to obtain continent directory id */
-
-// const citydirectory =
+const continentDropDown = document.querySelector("#continents");
+const countryDropDown = document.querySelector("#countries");
+const cityDropDown = document.querySelector("#cities");
 
 // ------------------------DOM LOADED--------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  getAPIData(continentDirectory, "continent", renderContinentData);
-
-  onChangeListener(selectContinent);
-  onChangeListener(selectCountry);
+  getAPIData(continentDirectory)
+    .then((data) => {
+      const continentList = parseAPIData(data, 'continent')
+      renderLocationData(continentList, continentDropDown)
+    })
+    .catch((err) => console.log('Error fetching continents: ', err.message))
 });
 
 // -------------------Asynchronous Functions-----------------------
 // -------------------Fetch Data From External API------------
 
-
 function getAPIData(URL) {
-  return fetch(URL).then(resp => resp.json());
-}
-
-function parseAPIData(data, locationType) {
-  const locationList = data["_links"][`${locationType}:items`].map((location) => location.name);
-
-  return locationList;
+  return fetch(URL).then((resp) => resp.json());
 }
 
 // ------------------------- Methods ---------------------------------
 // ------------------------- Handle API Data -------------------------
 
+function parseAPIData(data, locationType) {
+  const locationList = data["_links"][`${locationType}:items`].map(
+    (location) => location.name
+  );
+
+  return locationList;
+}
+
+// DOM MANPIPULATION -------------------------------------------------------
+
+function createAppendOptions(optList, parentEl) {
+  optList.forEach((opt) => {
+    const option = document.createElement("option");
+    option.innerText = opt;
+    parentEl.append(option);
+  });
+}
+
+function resetDropDownOptions(dropdown) {
+  const defaultOption = dropdown.children[0];
+  console.log("defaultOption: ", defaultOption);
+  defaultOption.selected = true;
+  dropdown.innerHTML = '';
+  dropdown.append(defaultOption);
+}
+
+function renderLocationData(list, dropDown) {
+  dropDown.parentElement.classlist.remove('hide');
+  createAppendOptions(list, dropDown);
+}
+
+// EVENT LISTENERS ----------------------------------------------
+
+
+
+
 /* Continents ---------------------------------------- */
 function renderContinentData(apiDataObj) {
   const continentList = apiDataObj.map((continent) => continent.name);
-  console.log('continentList: ', continentList);
-
+  console.log("continentList: ", continentList);
 
   appendFixedContinents(continentList, selectContinent);
 }
@@ -65,8 +93,7 @@ function renderContinentData(apiDataObj) {
 /* Countries ----------------------------------------*/
 function renderCountryData(apiDataObj) {
   const countryList = apiDataObj.map((country) => country.name);
-  console.log('countryList: ', countryList);
-
+  console.log("countryList: ", countryList);
 
   toggleSelectorListVisibility(selectCountry);
 
@@ -82,9 +109,6 @@ function renderCityData(apiDataObj) {
   const citiesList = apiDataObj["_embedded"]["city:search-results"].map((x) => {
     return x["_embedded"]["city:item"]["name"];
   });
-
-
-
 
   toggleSelectorListVisibility(selectCity);
   handleDynamicOptions(citiesList, selectCity);
@@ -194,17 +218,13 @@ function onChangeListener(selectorList) {
   selectorList.addEventListener("change", (event) => {
     const selectionValue = event.target.value;
 
-
     if (selectorList === selectContinent) {
       const countryListArr = `${countryDirectory}${continentAbbreviations[selectionValue]}/countries`;
 
-
       return getAPIData(countryListArr, "country", renderCountryData);
-    }
-
-    else if (selectorList === selectCountry) {
+    } else if (selectorList === selectCountry) {
       const cityListArr = `${cityDirectory}${selectionValue}`;
-      console.log('cityListArr: ', cityListArr);
+      console.log("cityListArr: ", cityListArr);
 
       return getAPIData(cityListArr, "city", renderCityData);
     }
