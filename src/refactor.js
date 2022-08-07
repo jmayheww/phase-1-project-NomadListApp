@@ -92,7 +92,13 @@ function renderLocationData(list, dropDown) {
 }
 
 function dropDownEventHandler(locationType, event) {
-  const selection = event ? event.target.value : null;
+  let selection = event ? event.target.value : null;
+
+  if (selection === "United States") {
+    selection = "usa";
+  }
+
+  console.log("selection: ", selection);
 
   const url = selection
     ? getAPIURL[locationType](selection)
@@ -102,6 +108,7 @@ function dropDownEventHandler(locationType, event) {
 
   getAPIData(url)
     .then((data) => {
+      console.log(data);
       const locList = parseAPIData[locationType](data).sort();
       console.log(locList);
 
@@ -128,4 +135,44 @@ continentDropDown.addEventListener("change", (event) => {
 
 countryDropDown.addEventListener("change", (event) => {
   dropDownEventHandler("city", event);
+});
+
+cityDropDown.addEventListener("change", (event) => {
+  const selection = event.target.value;
+
+  const cityUrl = getAPIURL["city"](selection);
+
+  const cityDetails =
+    "https:teleport.org/api/resources/City/#!/relations/{rel}/";
+
+  getAPIData(cityDetails).then((data) => {
+    console.log(data);
+  });
+
+  //  "ua:details": {
+  //   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/details/"
+
+  //   "ua:primary-cities": [
+  //     {
+  //         "href": "https://api.teleport.org/api/cities/geonameid:5392171/",
+  //         "name": "San Jose"
+  //     },
+  //     {
+  //         "href": "https://api.teleport.org/api/cities/geonameid:5391959/",
+  //         "name": "San Francisco"
+  //     },
+  //     {
+  //         "href": "https://api.teleport.org/api/cities/geonameid:5389489/",
+  //         "name": "Sacramento"
+  //     },
+  //     {
+  //         "href": "https://api.teleport.org/api/cities/geonameid:5378538/",
+  //         "name": "Oakland"
+  // })
+
+  // "ua:salaries": {
+  //   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/salaries/"
+  // },
+  // "ua:scores": {
+  //   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/scores/
 });
