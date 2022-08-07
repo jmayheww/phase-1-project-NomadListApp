@@ -12,7 +12,6 @@
     </style>
     <!-- <script src="src/index.js" defer></script> -->
     <script src="src/refactor.js" defer></script>
-
   </head>
   <body>
     <div id="page-headers">
@@ -20,39 +19,35 @@
       <h2>Sub-heading- hook</h2>
     </div>
 
+    <div id="continent-wrapper">
+      <label for="continents"></label>
+      <select name="continents" id="continents" class="selectors">
+        <option value="Choose a continent" disabled selected>
+          Choose a continent:
+        </option>
+      </select>
+    </div>
 
-      <div id="continent-wrapper">
-        <label for="continents"></label>
-        <select name="continents" id="continents" class="selectors">
-          <option value="Choose a continent" disabled selected>
-            Choose a continent:
-          </option>
-        </select>
+    <div id="country-wrapper" class="hide">
+      <label for="countries"></label>
+      <select name="countries" id="countries" class="selectors">
+        <option value="Choose a country" disabled selected>
+          Choose a country:
+        </option>
+      </select>
+    </div>
+
+    <div id="city-wrapper" class="hide">
+      <label for="cities"></label>
+      <select name="cities" id="cities" class="selectors">
+        <option value="Choose a city" disabled selected>Choose a city:</option>
+      </select>
+    </div>
+
+    <div id="city-card-wrapper">
+        <div id="city-img"></div>
       </div>
 
-      <div id="country-wrapper" class="hide">
-        <label for="countries"></label>
-        <select name="countries" id="countries" class="selectors">
-          <option value="Choose a country" disabled selected>
-            Choose a country:
-          </option>
-        </select>
-      </div>
-
-
-      <div id="city-wrapper" class="hide">
-        <label for="cities"></label>
-        <select name="cities" id="cities" class="selectors">
-          <option value="Choose a city" disabled selected>
-            Choose a city:
-          </option>
-        </select>
-      </div>
-
-      <div id="city-card-wrapper">
-
-
-
-      </div>
-    </body>
+    </div>
+  </body>
 </html>

@@ -81,6 +81,10 @@ const parseAPIData = {
       "city:item"
     ]["_embedded"]["city:urban_area"]["_embedded"]["ua:scores"];
   },
+  image: (data) => {
+    return data["photos"][0];
+    // console.log(data["photos"][0]["image"])
+  },
 };
 
 // DOM MANPIPULATION -------------------------------------------------------
@@ -111,16 +115,72 @@ function renderLocationData(list, dropDown) {
 }
 
 function createCityCard(data, qualityLife, location) {
+  const cityCard = document.createElement("div");
   const title = document.createElement("h2");
+  const cityImg = document.createElement("img");
+  const imgCredit = document.createElement("span");
   const population = document.createElement("p");
   const description = document.createElement("p");
+  const cityScore = document.createElement("p");
 
   title.textContent = data.full_name;
-  population.textContent = `Population: ${data.population}`;
+  population.textContent = `Total Population: ${data.population}`;
   description.textContent = qualityLife.summary.replace(/<[^>]+>/g, "");
+  cityScore.textContent = `Aggregate city score out of 100: ${Math.round(
+    qualityLife.teleport_city_score
+  )}`;
 
-  location.append(title, description, population);
+  cityCard.append(title, description, population, cityScore);
+  location.append(cityCard);
 }
+
+function handleImgData(data) {
+  console.log("data: ", data);
+  const citySlug =
+    data._embedded["city:search-results"][0]["_embedded"]["city:item"][
+      "_embedded"
+    ]["city:urban_area"].slug;
+
+  const imgURL = `https://api.teleport.org/api/urban_areas/slug:${citySlug}/images/`;
+
+  getAPIData(imgURL).then((data) => {
+    const imgData = parseAPIData["image"](data);
+    console.log("imgData: ", imgData);
+
+    const imgFile = imgData["image"].web;
+    const imgAuthor = imgData["attribution"].photographer;
+    const imgSrc = imgData["attribution"].source;
+
+    appendImgData(imgFile, imgAuthor, imgSrc);
+  });
+
+  function appendImgData(imageFile, imgAuthor, imgSrc) {
+    const img = document.createElement("img");
+    const imgCitation1 = document.createElement("p");
+    const imgCitation2 = document.createElement("p");
+
+    const imgWrapper = document.querySelector("#city-img");
+
+    img.src = imageFile;
+    imgCitation1.textContent = imgAuthor;
+    imgCitation2.textContent = imgSrc;
+
+    imgWrapper.append(img, imgCitation1, imgCitation2);
+  }
+}
+
+// const imageData = data["photos"][0]["image"].web;
+// const imageCredit = data["photos"][0]["image"].attribution;
+
+// const imageWrapper = document.querySelector("#city-image");
+// const cityImg = document.createElement("img");
+// const cityCredit = document.createElement("span");
+
+// cityImg.src = imageData;
+// cityImg.alt = `Stock image of ${citySlug}`;
+// cityCredit.textContent = imageCredit;
+
+// imageWrapper.append(cityImg, cityCredit);
 
 function dropDownEventHandler(locationType, event) {
   let selection = event ? event.target.value : null;
@@ -155,6 +215,7 @@ function handleCityCards(locationType1, locationType2, event) {
   getAPIData(url).then((data) => {
     const titleList = parseAPIData[locationType1](data);
     const qualityLife = parseAPIData[locationType2](data);
+    handleImgData(data);
     createCityCard(titleList, qualityLife, DOM_MAP[locationType1].wrap);
   });
 }
