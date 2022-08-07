@@ -22,6 +22,20 @@ const continentDropDown = document.querySelector("#continents");
 const countryDropDown = document.querySelector("#countries");
 const cityDropDown = document.querySelector("#cities");
 
+const DOM_MAP = {
+  continent: {
+    wrap: continentWrapper,
+    drop: continentDropDown,
+  },
+  country: {
+    wrap: countryWrapper,
+    drop: countryDropDown,
+  },
+  city: {
+    wrap: cityWrapper,
+    drop: cityDropDown,
+  },
+};
 // ------------------------------------------DOM LOADED--------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -63,8 +77,9 @@ const parseAPIData = {
 // DOM MANPIPULATION -------------------------------------------------------
 
 function createAppendOptions(optList, parentEl) {
+  const option = document.createElement("option");
   optList.forEach((opt) => {
-    const option = document.createElement("option");
+    const option = opt;
     option.innerText = opt;
     parentEl.append(option);
   });
@@ -79,9 +94,6 @@ function resetDropDownOptions(dropdown) {
 }
 
 function renderLocationData(list, dropDown) {
-  console.log('dropDown: ', dropDown);
-  console.log('list: ', list);
-
   dropDown.parentElement.classList.remove("hide");
   createAppendOptions(list, dropDown);
 }
@@ -101,16 +113,11 @@ continentDropDown.addEventListener("change", (event) => {
 });
 
 countryDropDown.addEventListener("change", (event) => {
-
   const countrySelection = event.target.value;
-
-
   const citiesURL = getAPIURL.city(countrySelection);
-
 
   getAPIData(citiesURL)
     .then((data) => {
-
       const cityList = parseAPIData.city(data);
       cityList.sort();
 
