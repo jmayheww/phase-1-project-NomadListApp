@@ -17,6 +17,7 @@ const ISO_Map = {
 const continentWrapper = document.querySelector("#continent-wrapper");
 const countryWrapper = document.querySelector("#country-wrapper");
 const cityWrapper = document.querySelector("#city-wrapper");
+const cardWrapper = document.querySelector("#city-card-wrapper");
 
 const continentDropDown = document.querySelector("#continents");
 const countryDropDown = document.querySelector("#countries");
@@ -34,6 +35,9 @@ const DOM_MAP = {
   city: {
     wrap: cityWrapper,
     drop: cityDropDown,
+  },
+  details: {
+    wrap: cardWrapper,
   },
 };
 
@@ -66,9 +70,11 @@ const parseAPIData = {
       return location["_embedded"]["city:item"].name;
     }),
   details: (data) => {
-    console.log(data["_embedded"]["city:search-results"][0]["_embedded"][
+    console.log("data: ", data);
+
+    return data["_embedded"]["city:search-results"][0]["_embedded"][
       "city:item"
-    ].population)
+    ];
   },
 };
 
@@ -99,7 +105,15 @@ function renderLocationData(list, dropDown) {
   createAppendOptions(list, dropDown);
 }
 
+function createCityCard(data, location) {
+  const h2 = document.createElement("h2");
+  const description = document.createElement("p");
+  const population = document.createElement("p");
 
+  population.innerText = data.population;
+
+  location.append(h2, description, population);
+}
 
 function dropDownEventHandler(locationType, event) {
   let selection = event ? event.target.value : null;
@@ -126,6 +140,17 @@ function dropDownEventHandler(locationType, event) {
     });
 }
 
+function handleCityCards(locationType, event) {
+  let selection = event.target.value;
+
+  const url = getAPIURL[locationType](selection);
+
+  getAPIData(url).then((data) => {
+    const detailsList = parseAPIData[locationType](data);
+    createCityCard(detailsList, DOM_MAP[locationType].wrap);
+  });
+}
+
 // EVENT LISTENERS ----------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -141,7 +166,7 @@ countryDropDown.addEventListener("change", (event) => {
 });
 
 cityDropDown.addEventListener("change", (event) => {
-  dropDownEventHandler("details", event);
+  handleCityCards("details", event);
 
   // const selection = event.target.value;
 
