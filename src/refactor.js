@@ -36,7 +36,7 @@ const DOM_MAP = {
     wrap: cityWrapper,
     drop: cityDropDown,
   },
-  details: {
+  title: {
     wrap: cardWrapper,
   },
 };
@@ -52,7 +52,7 @@ const getAPIURL = {
   city: (country) =>
     `${rootURL}/cities?search=${country}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`,
 
-  details: (city) =>
+  title: (city) =>
     `${rootURL}/cities/?search=${city}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`,
 };
 
@@ -69,12 +69,17 @@ const parseAPIData = {
     data["_embedded"]["city:search-results"].map((location) => {
       return location["_embedded"]["city:item"].name;
     }),
-  details: (data) => {
+  title: (data) => {
     console.log("data: ", data);
 
     return data["_embedded"]["city:search-results"][0]["_embedded"][
       "city:item"
     ];
+  },
+  qualityLife: (data) => {
+    return data["_embedded"]["city:search-results"][0]["_embedded"][
+      "city:item"
+    ]["_embedded"]["city:urban_area"]["_embedded"]["ua:scores"];
   },
 };
 
@@ -105,14 +110,16 @@ function renderLocationData(list, dropDown) {
   createAppendOptions(list, dropDown);
 }
 
-function createCityCard(data, location) {
-  const h2 = document.createElement("h2");
-  const description = document.createElement("p");
+function createCityCard(data, qualityLife, location) {
+  const title = document.createElement("h2");
   const population = document.createElement("p");
+  const description = document.createElement("p");
 
-  population.innerText = data.population;
+  title.textContent = data.full_name;
+  population.textContent = `Population: ${data.population}`;
+  description.textContent = qualityLife.summary.replace(/<[^>]+>/g, "");
 
-  location.append(h2, description, population);
+  location.append(title, description, population);
 }
 
 function dropDownEventHandler(locationType, event) {
@@ -140,14 +147,15 @@ function dropDownEventHandler(locationType, event) {
     });
 }
 
-function handleCityCards(locationType, event) {
+function handleCityCards(locationType1, locationType2, event) {
   let selection = event.target.value;
 
-  const url = getAPIURL[locationType](selection);
+  const url = getAPIURL[locationType1](selection);
 
   getAPIData(url).then((data) => {
-    const detailsList = parseAPIData[locationType](data);
-    createCityCard(detailsList, DOM_MAP[locationType].wrap);
+    const titleList = parseAPIData[locationType1](data);
+    const qualityLife = parseAPIData[locationType2](data);
+    createCityCard(titleList, qualityLife, DOM_MAP[locationType1].wrap);
   });
 }
 
@@ -166,7 +174,7 @@ countryDropDown.addEventListener("change", (event) => {
 });
 
 cityDropDown.addEventListener("change", (event) => {
-  handleCityCards("details", event);
+  handleCityCards("title", "qualityLife", event);
 
   // const selection = event.target.value;
 
