@@ -77,7 +77,6 @@ const parseAPIData = {
 // DOM MANPIPULATION -------------------------------------------------------
 
 function createAppendOptions(optList, parentEl) {
-  const option = document.createElement("option");
   optList.forEach((opt) => {
     const option = opt;
     option.innerText = opt;
@@ -94,6 +93,10 @@ function resetDropDownOptions(dropdown) {
 }
 
 function renderLocationData(list, dropDown) {
+  if (list.length < 1) {
+    list = ["No cities in this country..."];
+  }
+
   dropDown.parentElement.classList.remove("hide");
   createAppendOptions(list, dropDown);
 }
