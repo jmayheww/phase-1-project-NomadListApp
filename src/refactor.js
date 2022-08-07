@@ -36,16 +36,6 @@ const DOM_MAP = {
     drop: cityDropDown,
   },
 };
-// ------------------------------------------DOM LOADED--------------------------------
-
-document.addEventListener("DOMContentLoaded", () => {
-  getAPIData(getAPIURL.continent())
-    .then((data) => {
-      const continentList = parseAPIData.continent(data);
-      renderLocationData(continentList, continentDropDown);
-    })
-    .catch((err) => console.log("Error fetching continents: ", err.message));
-});
 
 // -------------------------------------------API---------------------------------------------------
 
@@ -101,31 +91,34 @@ function renderLocationData(list, dropDown) {
   createAppendOptions(list, dropDown);
 }
 
+function dropDownEventHandler(locationType, event) {
+  const selection = event ? event.target.value : null;
+  const url = selection
+    ? getAPIUrl([locationType](selection))
+    : getAPIUrl([locationType]());
+  getAPIData(url)
+    .then((data) => {
+      const locList = parseAPIData[locationType](data).sort();
+      if (event) {
+        resetDropDownOptions(DOM_MAP[locationType].drop);
+        renderLocationData(locList, DOM_MAP[locationType].drop);
+      }
+    })
+    .catch((err) => {
+      console.log(`Error fetching ${locationType} list: `, err);
+    });
+}
+
 // EVENT LISTENERS ----------------------------------------------
 
-continentDropDown.addEventListener("change", (event) => {
-  const continentSelection = event.target.value;
+document.addEventListener("DOMContentLoaded", () => {
+  dropDownEventHandler("continent");
+});
 
-  getAPIData(getAPIURL.country(continentSelection))
-    .then((data) => {
-      const countryList = parseAPIData.country(data);
-      resetDropDownOptions(countryDropDown);
-      renderLocationData(countryList, countryDropDown);
-    })
-    .catch((err) => console.log("Error fetching countries!: ", err.message));
+continentDropDown.addEventListener("change", (event) => {
+  dropDownEventHandler("country", event);
 });
 
 countryDropDown.addEventListener("change", (event) => {
-  const countrySelection = event.target.value;
-  const citiesURL = getAPIURL.city(countrySelection);
-
-  getAPIData(citiesURL)
-    .then((data) => {
-      const cityList = parseAPIData.city(data);
-      cityList.sort();
-
-      resetDropDownOptions(cityDropDown);
-      renderLocationData(cityList, cityDropDown);
-    })
-    .catch((err) => console.log("Error fetching cities!: ", err.message));
+  dropDownEventHandler("city", event);
 });
