@@ -68,7 +68,7 @@ const parseAPIData = {
 
 function createAppendOptions(optList, parentEl) {
   optList.forEach((opt) => {
-    const option = opt;
+    const option = document.createElement("option");
     option.innerText = opt;
     parentEl.append(option);
   });
@@ -93,16 +93,22 @@ function renderLocationData(list, dropDown) {
 
 function dropDownEventHandler(locationType, event) {
   const selection = event ? event.target.value : null;
+
   const url = selection
-    ? getAPIUrl([locationType](selection))
-    : getAPIUrl([locationType]());
+    ? getAPIURL[locationType](selection)
+    : getAPIURL[locationType]();
+
+  console.log(url);
+
   getAPIData(url)
     .then((data) => {
       const locList = parseAPIData[locationType](data).sort();
+      console.log(locList);
+
       if (event) {
         resetDropDownOptions(DOM_MAP[locationType].drop);
-        renderLocationData(locList, DOM_MAP[locationType].drop);
       }
+      renderLocationData(locList, DOM_MAP[locationType].drop);
     })
     .catch((err) => {
       console.log(`Error fetching ${locationType} list: `, err);
@@ -112,6 +118,7 @@ function dropDownEventHandler(locationType, event) {
 // EVENT LISTENERS ----------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("test");
   dropDownEventHandler("continent");
 });
 
