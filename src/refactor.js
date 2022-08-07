@@ -47,6 +47,9 @@ const getAPIURL = {
 
   city: (country) =>
     `${rootURL}/cities?search=${country}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`,
+
+  details: (city) =>
+    `${rootURL}/cities/?search=${city}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`,
 };
 
 function getAPIData(URL) {
@@ -62,6 +65,11 @@ const parseAPIData = {
     data["_embedded"]["city:search-results"].map((location) => {
       return location["_embedded"]["city:item"].name;
     }),
+  details: (data) => {
+    console.log(data["_embedded"]["city:search-results"][0]["_embedded"][
+      "city:item"
+    ].population)
+  },
 };
 
 // DOM MANPIPULATION -------------------------------------------------------
@@ -91,6 +99,8 @@ function renderLocationData(list, dropDown) {
   createAppendOptions(list, dropDown);
 }
 
+
+
 function dropDownEventHandler(locationType, event) {
   let selection = event ? event.target.value : null;
 
@@ -98,19 +108,13 @@ function dropDownEventHandler(locationType, event) {
     selection = "usa";
   }
 
-  console.log("selection: ", selection);
-
   const url = selection
     ? getAPIURL[locationType](selection)
     : getAPIURL[locationType]();
 
-  console.log(url);
-
   getAPIData(url)
     .then((data) => {
-      console.log(data);
       const locList = parseAPIData[locationType](data).sort();
-      console.log(locList);
 
       if (event) {
         resetDropDownOptions(DOM_MAP[locationType].drop);
@@ -125,7 +129,6 @@ function dropDownEventHandler(locationType, event) {
 // EVENT LISTENERS ----------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("test");
   dropDownEventHandler("continent");
 });
 
@@ -138,16 +141,28 @@ countryDropDown.addEventListener("change", (event) => {
 });
 
 cityDropDown.addEventListener("change", (event) => {
-  const selection = event.target.value;
+  dropDownEventHandler("details", event);
 
-  const cityUrl = getAPIURL["city"](selection);
+  // const selection = event.target.value;
 
-  const cityDetails =
-    "https:teleport.org/api/resources/City/#!/relations/{rel}/";
+  // const cityUrl = getAPIURL["city"](selection);
 
-  getAPIData(cityDetails).then((data) => {
-    console.log(data);
-  });
+  // const cityDetails = `https://api.teleport.org/api/cities/?search=${selection}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`;
+
+  // getAPIData(cityDetails).then((data) => {
+  //   console.log(data);
+  //   const getPopDetails =
+  //     data._embedded["city:search-results"][0]["_embedded"]["city:item"];
+
+  //   const getQualityDetails =
+  //     getPopDetails._embedded["city:urban_area"]["_embedded"]["ua:scores"];
+  //   console.log(getPopDetails.population);
+  //   console.log(getQualityDetails);
+
+  //   if ("city:urban_area" === undefined) {
+  //     console.log("This city does not current have quality of life statistics");
+  //   }
+  // });
 
   //  "ua:details": {
   //   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/details/"
