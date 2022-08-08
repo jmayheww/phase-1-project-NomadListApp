@@ -83,7 +83,6 @@ const parseAPIData = {
   },
   image: (data) => {
     return data["photos"][0];
-    // console.log(data["photos"][0]["image"])
   },
 };
 
@@ -116,21 +115,41 @@ function renderLocationData(list, dropDown) {
 
 function createCityCard(data, qualityLife, location) {
   const cityCard = document.createElement("div");
+  const cityInfo = document.createElement("div");
+  const cityScores = document.createElement("div");
+
   const title = document.createElement("h2");
-  const cityImg = document.createElement("img");
-  const imgCredit = document.createElement("span");
   const population = document.createElement("p");
   const description = document.createElement("p");
-  const cityScore = document.createElement("p");
+  const cityScore = document.createElement("h4");
+
+  cityCard.id = "city-card";
+  cityInfo.id = "city-info";
+  cityScores.id = cityScores;
+
+  const qualityOfLifeScores = qualityLife["categories"];
+
+  qualityOfLifeScores.map((score) => {
+    const scoreData = document.createElement("p");
+
+    scoreData.textContent = `${score.name}: ${Math.round(
+      score.score_out_of_10
+    )}/10`;
+
+
+    cityScores.append(scoreData);
+  });
 
   title.textContent = data.full_name;
   population.textContent = `Total Population: ${data.population}`;
   description.textContent = qualityLife.summary.replace(/<[^>]+>/g, "");
-  cityScore.textContent = `Aggregate city score out of 100: ${Math.round(
+  cityScore.textContent = `Aggregate city score: ${Math.round(
     qualityLife.teleport_city_score
-  )}`;
+  )}/100`;
 
-  cityCard.append(title, description, population, cityScore);
+  cityInfo.append(title, description, population);
+  cityScores.append(cityScore);
+  cityCard.append(cityInfo, cityScores);
   location.append(cityCard);
 }
 
@@ -156,31 +175,18 @@ function handleImgData(data) {
 
   function appendImgData(imageFile, imgAuthor, imgSrc) {
     const img = document.createElement("img");
-    const imgCitation1 = document.createElement("p");
-    const imgCitation2 = document.createElement("p");
+    const imgCitation1 = document.createElement("span");
+    const imgCitation2 = document.createElement("span");
 
     const imgWrapper = document.querySelector("#city-img");
 
     img.src = imageFile;
-    imgCitation1.textContent = imgAuthor;
-    imgCitation2.textContent = imgSrc;
+    imgCitation1.textContent = `Photographer: ${imgAuthor}`;
+    imgCitation2.textContent = `Origin: ${imgSrc}`;
 
     imgWrapper.append(img, imgCitation1, imgCitation2);
   }
 }
-
-// const imageData = data["photos"][0]["image"].web;
-// const imageCredit = data["photos"][0]["image"].attribution;
-
-// const imageWrapper = document.querySelector("#city-image");
-// const cityImg = document.createElement("img");
-// const cityCredit = document.createElement("span");
-
-// cityImg.src = imageData;
-// cityImg.alt = `Stock image of ${citySlug}`;
-// cityCredit.textContent = imageCredit;
-
-// imageWrapper.append(cityImg, cityCredit);
 
 function dropDownEventHandler(locationType, event) {
   let selection = event ? event.target.value : null;
@@ -236,52 +242,52 @@ countryDropDown.addEventListener("change", (event) => {
 
 cityDropDown.addEventListener("change", (event) => {
   handleCityCards("title", "qualityLife", event);
-
-  // const selection = event.target.value;
-
-  // const cityUrl = getAPIURL["city"](selection);
-
-  // const cityDetails = `https://api.teleport.org/api/cities/?search=${selection}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`;
-
-  // getAPIData(cityDetails).then((data) => {
-  //   console.log(data);
-  //   const getPopDetails =
-  //     data._embedded["city:search-results"][0]["_embedded"]["city:item"];
-
-  //   const getQualityDetails =
-  //     getPopDetails._embedded["city:urban_area"]["_embedded"]["ua:scores"];
-  //   console.log(getPopDetails.population);
-  //   console.log(getQualityDetails);
-
-  //   if ("city:urban_area" === undefined) {
-  //     console.log("This city does not current have quality of life statistics");
-  //   }
-  // });
-
-  //  "ua:details": {
-  //   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/details/"
-
-  //   "ua:primary-cities": [
-  //     {
-  //         "href": "https://api.teleport.org/api/cities/geonameid:5392171/",
-  //         "name": "San Jose"
-  //     },
-  //     {
-  //         "href": "https://api.teleport.org/api/cities/geonameid:5391959/",
-  //         "name": "San Francisco"
-  //     },
-  //     {
-  //         "href": "https://api.teleport.org/api/cities/geonameid:5389489/",
-  //         "name": "Sacramento"
-  //     },
-  //     {
-  //         "href": "https://api.teleport.org/api/cities/geonameid:5378538/",
-  //         "name": "Oakland"
-  // })
-
-  // "ua:salaries": {
-  //   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/salaries/"
-  // },
-  // "ua:scores": {
-  //   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/scores/
 });
+
+// const selection = event.target.value;
+
+// const cityUrl = getAPIURL["city"](selection);
+
+// const cityDetails = `https://api.teleport.org/api/cities/?search=${selection}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`;
+
+// getAPIData(cityDetails).then((data) => {
+//   console.log(data);
+//   const getPopDetails =
+//     data._embedded["city:search-results"][0]["_embedded"]["city:item"];
+
+//   const getQualityDetails =
+//     getPopDetails._embedded["city:urban_area"]["_embedded"]["ua:scores"];
+//   console.log(getPopDetails.population);
+//   console.log(getQualityDetails);
+
+//   if ("city:urban_area" === undefined) {
+//     console.log("This city does not current have quality of life statistics");
+//   }
+// });
+
+//  "ua:details": {
+//   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/details/"
+
+//   "ua:primary-cities": [
+//     {
+//         "href": "https://api.teleport.org/api/cities/geonameid:5392171/",
+//         "name": "San Jose"
+//     },
+//     {
+//         "href": "https://api.teleport.org/api/cities/geonameid:5391959/",
+//         "name": "San Francisco"
+//     },
+//     {
+//         "href": "https://api.teleport.org/api/cities/geonameid:5389489/",
+//         "name": "Sacramento"
+//     },
+//     {
+//         "href": "https://api.teleport.org/api/cities/geonameid:5378538/",
+//         "name": "Oakland"
+// })
+
+// "ua:salaries": {
+//   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/salaries/"
+// },
+// "ua:scores": {
+//   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/scores/
