@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to phase-1-project-untitled 👋</h1>
+<h1 align="center">Welcome to NomadRank 👋</h1>
 <p>
 </p>
 
