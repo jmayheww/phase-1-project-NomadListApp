@@ -70,16 +70,22 @@ const parseAPIData = {
       return location["_embedded"]["city:item"].name;
     }),
   title: (data) => {
-    console.log("data: ", data);
-
     return data["_embedded"]["city:search-results"][0]["_embedded"][
       "city:item"
     ];
   },
   qualityLife: (data) => {
-    return data["_embedded"]["city:search-results"][0]["_embedded"][
-      "city:item"
-    ]["_embedded"]["city:urban_area"]["_embedded"]["ua:scores"];
+    try {
+      const cityLifeScores =
+        data["_embedded"]["city:search-results"][0]["_embedded"]["city:item"][
+          "_embedded"
+        ]["city:urban_area"]["_embedded"]["ua:scores"];
+      return cityLifeScores;
+    } catch {
+      console.log(
+        "Sorry, no quality of life data currently exists for this city"
+      );
+    }
   },
   image: (data) => {
     return data["photos"][0];
@@ -127,65 +133,88 @@ function createCityCard(data, qualityLife, location) {
   cityInfo.id = "city-info";
   cityScores.id = cityScores;
 
-  const qualityOfLifeScores = qualityLife["categories"];
+  try {
+    const qualityOfLifeScores = qualityLife["categories"];
 
-  qualityOfLifeScores.map((score) => {
-    const scoreData = document.createElement("p");
+    qualityOfLifeScores.map((score) => {
+      const scoreData = document.createElement("p");
 
-    scoreData.textContent = `${score.name}: ${Math.round(
-      score.score_out_of_10
-    )}/10`;
+      scoreData.textContent = `${score.name}: ${Math.round(
+        score.score_out_of_10
+      )}/10`;
 
+      cityScores.append(scoreData);
+    });
 
-    cityScores.append(scoreData);
-  });
+    title.textContent = data.full_name;
+    population.textContent = `Total Population: ${data.population}`;
+    description.textContent = qualityLife.summary.replace(/<[^>]+>/g, "");
+    cityScore.textContent = `Aggregate city score: ${Math.round(
+      qualityLife.teleport_city_score
+    )}/100`;
 
-  title.textContent = data.full_name;
-  population.textContent = `Total Population: ${data.population}`;
-  description.textContent = qualityLife.summary.replace(/<[^>]+>/g, "");
-  cityScore.textContent = `Aggregate city score: ${Math.round(
-    qualityLife.teleport_city_score
-  )}/100`;
-
-  cityInfo.append(title, description, population);
-  cityScores.append(cityScore);
-  cityCard.append(cityInfo, cityScores);
-  location.append(cityCard);
+    cityInfo.append(title, description, population);
+    cityScores.append(cityScore);
+    cityCard.append(cityInfo, cityScores);
+    location.append(cityCard);
+  } catch {
+    const sorryMessage =
+      "Sorry, no quality of life data currently exists for this city";
+    cityInfo.append(sorryMessage);
+    cityCard.append(cityInfo);
+    location.append(cityCard);
+  }
 }
 
 function handleImgData(data) {
-  console.log("data: ", data);
-  const citySlug =
-    data._embedded["city:search-results"][0]["_embedded"]["city:item"][
-      "_embedded"
-    ]["city:urban_area"].slug;
+  try {
+    const citySlug =
+      data._embedded["city:search-results"][0]["_embedded"]["city:item"][
+        "_embedded"
+      ]["city:urban_area"].slug;
 
-  const imgURL = `https://api.teleport.org/api/urban_areas/slug:${citySlug}/images/`;
+    const imgURL = `https://api.teleport.org/api/urban_areas/slug:${citySlug}/images/`;
 
-  getAPIData(imgURL).then((data) => {
-    const imgData = parseAPIData["image"](data);
-    console.log("imgData: ", imgData);
+    getAPIData(imgURL).then((data) => {
+      const imgData = parseAPIData["image"](data);
+      console.log("imgData: ", imgData);
 
-    const imgFile = imgData["image"].web;
-    const imgAuthor = imgData["attribution"].photographer;
-    const imgSrc = imgData["attribution"].source;
+      const imgFile = imgData["image"].web;
+      const imgAuthor = imgData["attribution"].photographer;
+      const imgSrc = imgData["attribution"].source;
 
-    appendImgData(imgFile, imgAuthor, imgSrc);
-  });
-
-  function appendImgData(imageFile, imgAuthor, imgSrc) {
-    const img = document.createElement("img");
-    const imgCitation1 = document.createElement("span");
-    const imgCitation2 = document.createElement("span");
-
+      appendImgData(imgFile, imgAuthor, imgSrc);
+    });
+  } catch {
     const imgWrapper = document.querySelector("#city-img");
+    const sorryMessage = "Sorry, no image data currently exists for this city";
 
-    img.src = imageFile;
-    imgCitation1.textContent = `Photographer: ${imgAuthor}`;
-    imgCitation2.textContent = `Origin: ${imgSrc}`;
-
-    imgWrapper.append(img, imgCitation1, imgCitation2);
+    imgWrapper.append(sorryMessage);
   }
+}
+
+// getAPIData(imgURL).then((data) => {
+//   const imgData = parseAPIData["image"](data);
+//   console.log("imgData: ", imgData);
+
+//   const imgFile = imgData["image"].web;
+//   const imgAuthor = imgData["attribution"].photographer;
+//   const imgSrc = imgData["attribution"].source;
+
+//   appendImgData(imgFile, imgAuthor, imgSrc);
+
+function appendImgData(imageFile, imgAuthor, imgSrc) {
+  const img = document.createElement("img");
+  const imgCitation1 = document.createElement("span");
+  const imgCitation2 = document.createElement("span");
+
+  const imgWrapper = document.querySelector("#city-img");
+
+  img.src = imageFile;
+  imgCitation1.textContent = `Photographer: ${imgAuthor}`;
+  imgCitation2.textContent = `Origin: ${imgSrc}`;
+
+  imgWrapper.append(img, imgCitation1, imgCitation2);
 }
 
 function dropDownEventHandler(locationType, event) {
