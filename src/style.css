@@ -1,0 +1,104 @@
+body {
+    background-color: cornsilk;
+
+
+}
+
+h1,
+h2 {
+    text-align: center;
+}
+
+#menu-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+#continents1,
+#countries1,
+#cities1 {
+    width: 12em;
+
+}
+
+#continents2,
+#countries2,
+#cities2 {
+    width: 12em;
+
+}
+
+#city-cards {
+    display: flex;
+    position: relative;
+    width: 40em;
+    margin: auto;
+    padding-top: 2em;
+    align-items: flex-start;
+
+}
+
+#city-card-wrapper1 {
+    padding-right: 2em;
+}
+
+#city-card-wrapper2 {
+    padding-left: 2em;
+}
+
+#city-image {
+    width: 80%;
+    justify-content: flex-start;
+
+}
+
+#description,
+#city-image {
+    text-align: left;
+    justify-content: flex-start;
+
+}
+
+#citations2 {
+    padding-bottom: 1em;
+}
+
+
+.scores {
+    justify-content: flex-start;
+    text-align: justify;
+    margin: 0;
+}
+
+#aggregate-score {
+    font-size: 1.5em;
+    font-weight: bold;
+
+}
+
+
+/* #city-card-wrapper1 {
+    width: 50%;
+    margin: auto;
+    text-align: left;
+    align-items: left;
+
+}
+
+#city-card-wrapper2 {
+    width: 50%;
+    margin: auto;
+    text-align: left;
+    align-items: right;
+} */
+
+
+.citations {
+    text-align: left;
+    align-content: left;
+    margin: auto;
+
+}

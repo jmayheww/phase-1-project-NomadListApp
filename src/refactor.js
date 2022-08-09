@@ -14,30 +14,44 @@ const ISO_Map = {
 
 // -----------------------------------------DOM-VARIABLES----------------------------
 
-const continentWrapper = document.querySelector("#continent-wrapper");
-const countryWrapper = document.querySelector("#country-wrapper");
-const cityWrapper = document.querySelector("#city-wrapper");
-const cardWrapper = document.querySelector("#city-card-wrapper");
+const continentWrapper1 = document.querySelector("#continent-wrapper1");
+const countryWrapper1 = document.querySelector("#country-wrapper1");
+const cityWrapper1 = document.querySelector("#city-wrapper1");
 
-const continentDropDown = document.querySelector("#continents");
-const countryDropDown = document.querySelector("#countries");
-const cityDropDown = document.querySelector("#cities");
+const continentDropDown1 = document.querySelector("#continents1");
+const countryDropDown1 = document.querySelector("#countries1");
+const cityDropDown1 = document.querySelector("#cities1");
+
+const continentWrapper2 = document.querySelector("#continent-wrapper2");
+const countryWrapper2 = document.querySelector("#country-wrapper2");
+const cityWrapper2 = document.querySelector("#city-wrapper2");
+
+const continentDropDown2 = document.querySelector("#continents2");
+const countryDropDown2 = document.querySelector("#countries2");
+const cityDropDown2 = document.querySelector("#cities2");
+
+const cardWrapper1 = document.querySelector("#city-card-wrapper1");
+const cardWrapper2 = document.querySelector("#city-card-wrapper2");
 
 const DOM_MAP = {
   continent: {
-    wrap: continentWrapper,
-    drop: continentDropDown,
+    wrap1: continentWrapper1,
+    drop1: continentDropDown1,
+    drop2: continentDropDown2,
   },
   country: {
-    wrap: countryWrapper,
-    drop: countryDropDown,
+    wrap1: countryWrapper1,
+    drop1: countryDropDown1,
+    drop2: countryDropDown2,
   },
   city: {
-    wrap: cityWrapper,
-    drop: cityDropDown,
+    wrap1: cityWrapper1,
+    drop1: cityDropDown1,
+    drop2: cityDropDown2,
   },
   cards: {
-    wrap: cardWrapper,
+    wrap1: cardWrapper1,
+    wrap2: cardWrapper2,
   },
 };
 
@@ -98,7 +112,7 @@ const parseAPIData = {
       return { name, pop, desc, scores, overAllScore };
     } catch {
       const missingDataMessage =
-        "Sorry, no quality of life data currently exists for this city.";
+        "Sorry, no other quality of life data currently exists for this city.";
 
       return { name, pop, missingDataMessage };
     }
@@ -153,7 +167,7 @@ function renderLocationData(list, dropDown) {
 
 function renderCityCard(cityData, imageData, cardsWrapper) {
   //clear previous content
-  cardWrapper.innerHTML = "";
+  cardsWrapper.innerHTML = "";
 
   //Handle missing data case
   if (cityData.missingDataMessage || imageData.missingImageData) {
@@ -192,20 +206,27 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
 
   const imgWrapper = document.createElement("div");
   const img = document.createElement("img");
-  const imgCitation1 = document.createElement("span");
-  const imgCitation2 = document.createElement("span");
+  const imgCitation1 = document.createElement("p");
+  const imgCitation2 = document.createElement("p");
 
   cityCard.id = "city-card";
   cityInfo.id = "city-info";
   cityScores.id = "city-scores";
+  description.id = "description";
+  cityScore.id = "aggregate-score";
 
   img.src = src;
+  img.id = "city-image";
+  imgCitation1.classList = "citations"
+  imgCitation2.classList = "citations";
+  imgWrapper.id = "image-wrapper";
 
   //Inject info into DOM elements
   title.textContent = name;
   population.textContent = `Total Population: ${pop}`;
   description.textContent = `Description Summary: ${desc}`;
   cityScore.textContent = `Aggregate city score: ${overAllScore}/100`;
+
 
   imgCitation1.textContent = `Photographer: ${photographer}`;
   imgCitation2.textContent = `Origin: ${originSrc}`;
@@ -216,18 +237,23 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
     scoreData.textContent = `${score.name}: ${Math.round(
       score.score_out_of_10
     )}/10`;
+    scoreData.classList = "scores";
     cityScores.append(scoreData);
   });
+  imgWrapper.append(img, imgCitation1, imgCitation2);
+
   cityInfo.append(title, description, population);
   cityScores.append(cityScore);
   cityCard.append(cityInfo, cityScores);
 
-  imgWrapper.append(img, imgCitation1, imgCitation2);
-
   cardsWrapper.append(imgWrapper, cityCard);
 }
 
-function locationSelectedEventHandler(locationType, event) {
+function locationSelectedEventHandler(
+  locationType,
+  domMapLocationValue,
+  event
+) {
   const needsInitLocation = typeof event === "object";
 
   let selectedLocationName = needsInitLocation ? event.target.value : null;
@@ -243,16 +269,16 @@ function locationSelectedEventHandler(locationType, event) {
     .then((data) => {
       const locList = parseAPIData[locationType](data).sort();
       if (needsInitLocation) {
-        resetDropDownOptions(DOM_MAP[locationType].drop);
+        resetDropDownOptions(DOM_MAP[locationType][domMapLocationValue]);
       }
-      renderLocationData(locList, DOM_MAP[locationType].drop);
+      renderLocationData(locList, DOM_MAP[locationType][domMapLocationValue]);
     })
     .catch((err) => {
       console.log(`Error fetching ${locationType} list: `, err);
     });
 }
 
-function citySelectedEventHandler(event) {
+function citySelectedEventHandler(event, domMapLocationValue) {
   let selectedCityName = event.target.value;
 
   const url = getAPIURL["cityInfo"](selectedCityName);
@@ -265,9 +291,14 @@ function citySelectedEventHandler(event) {
 
       if (imgSlug === "no-image") {
         const imageData = {
-          missingImageData: "Sorry, no image data currently exists for this city.",
+          missingImageData:
+            "Sorry, no image data currently exists for this city.",
         };
-        renderCityCard(cityData, imageData, DOM_MAP["cards"].wrap);
+        renderCityCard(
+          cityData,
+          imageData,
+          DOM_MAP["cards"][domMapLocationValue]
+        );
         return;
       }
       const imgUrl = getAPIURL["image"](imgSlug);
@@ -276,7 +307,11 @@ function citySelectedEventHandler(event) {
         .then((imgData) => {
           const imageData = parseAPIData["image"](imgData);
 
-          return renderCityCard(cityData, imageData, DOM_MAP["cards"].wrap);
+          return renderCityCard(
+            cityData,
+            imageData,
+            DOM_MAP["cards"][domMapLocationValue]
+          );
         })
         .catch((err) => console.log(`Error fetching image data: `, err));
     })
@@ -287,19 +322,32 @@ function citySelectedEventHandler(event) {
 
 document.addEventListener("DOMContentLoaded", () => {
   //fetching continent data from API and appending to DOM
-  locationSelectedEventHandler("continent");
+  locationSelectedEventHandler("continent", "drop1");
+  locationSelectedEventHandler("continent", "drop2");
 });
 
-continentDropDown.addEventListener("change", (event) => {
-  locationSelectedEventHandler("country", event);
+continentDropDown1.addEventListener("change", (event) => {
+  locationSelectedEventHandler("country", "drop1", event);
 });
 
-countryDropDown.addEventListener("change", (event) => {
-  locationSelectedEventHandler("city", event);
+countryDropDown1.addEventListener("change", (event) => {
+  locationSelectedEventHandler("city", "drop1", event);
 });
 
-cityDropDown.addEventListener("change", (event) => {
-  citySelectedEventHandler(event);
+cityDropDown1.addEventListener("change", (event) => {
+  citySelectedEventHandler(event, "wrap1");
+});
+
+continentDropDown2.addEventListener("change", (event) => {
+  locationSelectedEventHandler("country", "drop2", event);
+});
+
+countryDropDown2.addEventListener("change", (event) => {
+  locationSelectedEventHandler("city", "drop2", event);
+});
+
+cityDropDown2.addEventListener("change", (event) => {
+  citySelectedEventHandler(event, "wrap2");
 });
 
 // const selection = event.target.value;

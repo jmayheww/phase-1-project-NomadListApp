@@ -1,54 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Working Title</title>
-    <style>
-      .hide {
-        visibility: hidden;
-      }
-    </style>
-    <!-- <script src="src/index.js" defer></script> -->
-    <script src="src/refactor.js" defer></script>
-  </head>
-  <body>
-    <div id="page-headers">
-      <h1>NomadRank</h1>
-      <h2>Remote Workers of the World, Relocate!</h2>
-    </div>
 
-    <div id="continent-wrapper">
-      <label for="continents"></label>
-      <select name="continents" id="continents" class="selectors">
-        <option value="Choose a continent" disabled selected>
-          Choose a continent:
-        </option>
-      </select>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Working Title</title>
+  <style>
+    .hide {
+      visibility: hidden;
+    }
+  </style>
+  <link rel="stylesheet" href="src/style.css" />
+  <!-- <script src="src/index.js" defer></script> -->
+  <script src="src/refactor.js" defer></script>
+</head>
 
-    <div id="country-wrapper" class="hide">
-      <label for="countries"></label>
-      <select name="countries" id="countries" class="selectors">
-        <option value="Choose a country" disabled selected>
-          Choose a country:
-        </option>
-      </select>
-    </div>
+<body>
+  <div id="page-headers">
+    <h1>NomadRank</h1>
+    <h2>Remote Workers of the World, Relocate!</h2>
+  </div>
 
-    <div id="city-wrapper" class="hide">
-      <label for="cities"></label>
-      <select name="cities" id="cities" class="selectors">
-        <option value="Choose a city" disabled selected>Choose a city:</option>
-      </select>
-    </div>
-
-    <div id="city-card-wrapper">
-
-
+  <div id="menu-container">
+    <div id="dropdown-menu1">
+      <div id="continent-wrapper1">
+        <label for="continents"></label>
+        <select name="continents" id="continents1" class="selectors1">
+          <option value="Choose a continent" disabled selected>
+            Choose a continent:
+          </option>
+        </select>
       </div>
 
+      <div id="country-wrapper1" class="hide">
+        <label for="countries"></label>
+        <select name="countries" id="countries1" class="selectors1">
+          <option value="Choose a country" disabled selected>
+            Choose a country:
+          </option>
+        </select>
+      </div>
+
+      <div id="city-wrapper1" class="hide">
+        <label for="cities"></label>
+        <select name="cities" id="cities1" class="selectors1">
+          <option value="Choose a city" disabled selected>
+            Choose a city:
+          </option>
+        </select>
+      </div>
     </div>
-  </body>
+    <div id="dropdown-menu2">
+      <div id="continent-wrapper2">
+        <label for="continents"></label>
+        <select name="continents" id="continents2" class="selectors2">
+          <option value="Choose a continent" disabled selected>
+            Choose a continent:
+          </option>
+        </select>
+      </div>
+
+      <div id="country-wrapper2" class="hide">
+        <label for="countries"></label>
+        <select name="countries" id="countries2" class="selectors2">
+          <option value="Choose a country" disabled selected>
+            Choose a country:
+          </option>
+        </select>
+      </div>
+
+      <div id="city-wrapper2" class="hide">
+        <label for="cities"></label>
+        <select name="cities" id="cities2" class="selectors2">
+          <option value="Choose a city" disabled selected>
+            Choose a city:
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="city-cards">
+    <div id="city-card-wrapper1"></div>
+    <div id="city-card-wrapper2"></div>
+  </div>
+</body>
+
 </html>
