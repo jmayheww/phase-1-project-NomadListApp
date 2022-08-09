@@ -122,14 +122,6 @@ const parseAPIData = {
 
 // DOM MANPIPULATION -------------------------------------------------------
 
-function createAppendOptions(optList, parentEl) {
-  optList.forEach((opt) => {
-    const option = document.createElement("option");
-    option.innerText = opt;
-    parentEl.append(option);
-  });
-}
-
 function resetDropDownOptions(dropdown) {
   const defaultOption = dropdown.children[0];
 
@@ -144,7 +136,12 @@ function renderLocationData(list, dropDown) {
   }
 
   dropDown.parentElement.classList.remove("hide");
-  createAppendOptions(list, dropDown);
+  //append options
+  list.forEach((opt) => {
+    const option = document.createElement("option");
+    option.innerText = opt;
+    dropDown.append(option);
+  });
 }
 
 function createCityCard(data, qualityLife, location) {
