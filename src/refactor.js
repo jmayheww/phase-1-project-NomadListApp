@@ -225,73 +225,22 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
   cardsWrapper.append(imgWrapper, cityCard);
 }
 
-function handleImgData(data) {
-  try {
-    const citySlug =
-      data._embedded["city:search-results"][0]["_embedded"]["city:item"][
-        "_embedded"
-      ]["city:urban_area"].slug;
+function locationSelectedEventHandler(locationType, event) {
+  const needsInitLocation = typeof event === "object";
 
-    const imgURL = `https://api.teleport.org/api/urban_areas/slug:${citySlug}/images/`;
+  let selectedLocationName = needsInitLocation ? event.target.value : null;
 
-    getAPIData(imgURL).then((data) => {
-      const imgData = parseAPIData["image"](data);
-      console.log("imgData: ", imgData);
-
-      const imgFile = imgData["image"].web;
-      const imgAuthor = imgData["attribution"].photographer;
-      const imgSrc = imgData["attribution"].source;
-
-      appendImgData(imgFile, imgAuthor, imgSrc);
-    });
-  } catch {
-    const imgWrapper = document.querySelector("#city-img");
-    const sorryMessage = "Sorry, no image data currently exists for this city";
-
-    imgWrapper.append(sorryMessage);
+  if (selectedLocationName === "United States") {
+    selectedLocationName = "usa";
   }
-}
-
-// getAPIData(imgURL).then((data) => {
-//   const imgData = parseAPIData["image"](data);
-//   console.log("imgData: ", imgData);
-
-//   const imgFile = imgData["image"].web;
-//   const imgAuthor = imgData["attribution"].photographer;
-//   const imgSrc = imgData["attribution"].source;
-
-//   appendImgData(imgFile, imgAuthor, imgSrc);
-
-function appendImgData(imageFile, imgAuthor, imgSrc) {
-  const img = document.createElement("img");
-  const imgCitation1 = document.createElement("span");
-  const imgCitation2 = document.createElement("span");
-
-  const imgWrapper = document.querySelector("#city-img");
-
-  img.src = imageFile;
-  imgCitation1.textContent = `Photographer: ${imgAuthor}`;
-  imgCitation2.textContent = `Origin: ${imgSrc}`;
-
-  imgWrapper.append(img, imgCitation1, imgCitation2);
-}
-
-function dropDownEventHandler(locationType, event) {
-  let selection = event ? event.target.value : null;
-
-  if (selection === "United States") {
-    selection = "usa";
-  }
-
-  const url = selection
-    ? getAPIURL[locationType](selection)
-    : getAPIURL[locationType]();
+  const url = needsInitLocation
+    ? getAPIURL[locationType](selectedLocationName)
+    : getAPIURL[locationType](); //continent;
 
   getAPIData(url)
     .then((data) => {
       const locList = parseAPIData[locationType](data).sort();
-
-      if (event) {
+      if (needsInitLocation) {
         resetDropDownOptions(DOM_MAP[locationType].drop);
       }
       renderLocationData(locList, DOM_MAP[locationType].drop);
