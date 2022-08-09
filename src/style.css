@@ -1,5 +1,11 @@
-body {
+.default {
     background-color: cornsilk;
+    color: black;
+
+}
+
+#page-headers {
+    position: relative;
 
 
 }
@@ -9,11 +15,24 @@ h2 {
     text-align: center;
 }
 
+#dark-mode-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+
+}
+
+.dark-mode {
+    background-color: black;
+    color: white;
+}
+
 #menu-container {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+
 
 
 }
@@ -36,22 +55,20 @@ h2 {
 #city-cards {
     display: flex;
     position: relative;
-    width: 40em;
+    width: 75%;
     margin: auto;
     padding-top: 2em;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: space-between;
 
 
 }
 
-#city-card-wrapper1 {
-    padding-right: 2em;
+.city-card-wrapper {
+
+    width: 50%;
 }
 
-#city-card-wrapper2 {
-    padding-left: 2em;
-}
 
 .city-image {
     width: 80%;
@@ -65,8 +82,7 @@ h2 {
     text-align: left;
     justify-content: flex-start;
     align-items: flex-start;
-    width: 40em
-
+    width: 90%;
 }
 
 #citations2 {
@@ -104,7 +120,7 @@ h2 {
 
 .reset-button {
     display: flex;
-    width: 40em;
+    width: 90%;
     display: flex;
     align-items: left;
     text-align: center;

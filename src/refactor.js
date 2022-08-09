@@ -13,6 +13,8 @@ const ISO_Map = {
 };
 
 // -----------------------------------------DOM-VARIABLES----------------------------
+const body = document.querySelector("body");
+const darkMode = document.querySelector("#dark-mode-button");
 
 const continentWrapper1 = document.querySelector("#continent-wrapper1");
 const countryWrapper1 = document.querySelector("#country-wrapper1");
@@ -263,9 +265,9 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
 
   cityInfo.append(title, description, population);
   cityScores.append(cityScore);
-  cityCard.append(cityInfo, cityScores, resetButton);
+  cityCard.append(cityInfo, cityScores);
 
-  cardsWrapper.append(imgWrapper, cityCard);
+  cardsWrapper.append(imgWrapper, cityCard, resetButton);
 }
 
 function locationSelectedEventHandler(
@@ -342,12 +344,24 @@ function resetSelectionEventHandler(event) {
   buttonEl.parentElement.innerHTML = "Please make another selection";
 }
 
+function toggleDarkModeEventHandler() {
+  if ((body.classList = "default")) {
+    body.classList.replace("default", "dark-mode");
+  }
+
+
+}
+
 // EVENT LISTENERS ----------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
   //fetching continent data from API and appending to DOM
   locationSelectedEventHandler("continent", "drop1");
   locationSelectedEventHandler("continent", "drop2");
+});
+
+darkMode.addEventListener("click", () => {
+  toggleDarkModeEventHandler();
 });
 
 continentDropDown1.addEventListener("change", (event) => {
@@ -373,51 +387,3 @@ countryDropDown2.addEventListener("change", (event) => {
 cityDropDown2.addEventListener("change", (event) => {
   citySelectedEventHandler(event, "wrap2");
 });
-
-// const selection = event.target.value;
-
-// const cityUrl = getAPIURL["city"](selection);
-
-// const cityDetails = `https://api.teleport.org/api/cities/?search=${selection}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`;
-
-// getAPIData(cityDetails).then((data) => {
-//   console.log(data);
-//   const getPopDetails =
-//     data._embedded["city:search-results"][0]["_embedded"]["city:item"];
-
-//   const getQualityDetails =
-//     getPopDetails._embedded["city:urban_area"]["_embedded"]["ua:scores"];
-//   console.log(getPopDetails.population);
-//   console.log(getQualityDetails);
-
-//   if ("city:urban_area" === undefined) {
-//     console.log("This city does not current have quality of life statistics");
-//   }
-// });
-
-//  "ua:details": {
-//   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/details/"
-
-//   "ua:primary-cities": [
-//     {
-//         "href": "https://api.teleport.org/api/cities/geonameid:5392171/",
-//         "name": "San Jose"
-//     },
-//     {
-//         "href": "https://api.teleport.org/api/cities/geonameid:5391959/",
-//         "name": "San Francisco"
-//     },
-//     {
-//         "href": "https://api.teleport.org/api/cities/geonameid:5389489/",
-//         "name": "Sacramento"
-//     },
-//     {
-//         "href": "https://api.teleport.org/api/cities/geonameid:5378538/",
-//         "name": "Oakland"
-// })
-
-// "ua:salaries": {
-//   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/salaries/"
-// },
-// "ua:scores": {
-//   "href": "https://api.teleport.org/api/urban_areas/slug:san-francisco-bay-area/scores/
