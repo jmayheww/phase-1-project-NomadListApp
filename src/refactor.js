@@ -97,7 +97,7 @@ const parseAPIData = {
         ""
       );
 
-      return { name, pop, description, scores, overAllScore };
+      return { name, pop, desc, scores, overAllScore };
     } catch {
       const missingDataMessage =
         "Sorry, no quality of life data currently exists for this city.";
@@ -111,12 +111,17 @@ const parseAPIData = {
     ]["city:urban_area"]["slug"];
   },
   image: (data) => {
-    const IMAGE_DATA = data["photos"][0];
+    try {
+      const IMAGE_DATA = data["photos"][0];
 
-    const src = IMAGE_DATA["image"].web;
-    const photographer = IMAGE_DATA["attribution"].photographer;
-    const originSrc = IMAGE_DATA["attribution"].source;
-    return { src, photographer, originSrc };
+      const src = IMAGE_DATA["image"].web;
+      const photographer = IMAGE_DATA["attribution"].photographer;
+      const originSrc = IMAGE_DATA["attribution"].source;
+      return { src, photographer, originSrc };
+    } catch {
+      const missingImageData = "No image data currently exists for this city";
+      return missingImageData;
+    }
   },
 };
 
@@ -144,51 +149,80 @@ function renderLocationData(list, dropDown) {
   });
 }
 
-function createCityCard(data, qualityLife, location) {
+function renderCityCard(cityData, imageData, cardsWrapper) {
+  //clear previous content
+  cardWrapper.innerHTML = "";
+
+  //Handle missing data case
+  if (cityData.missingDataMessage || imageData.missingImageData) {
+    const { name, pop, missingDataMessage } = cityData;
+
+    const cityCard = document.createElement("div");
+    const title = document.createElement("h2");
+    const population = document.createElement("p");
+    const description = document.createElement("p");
+    title.innerText = name;
+    population.innerText = pop;
+    description.innerText = missingDataMessage;
+
+    const missingImageData = imageData;
+
+    const imgWrapper = document.createElement("div");
+    const img = document.createElement("img");
+    img.textContent = missingImageData;
+    imgWrapper.append(img);
+
+    cityCard.append(title, population, description);
+    cardsWrapper.append(imgWrapper, cityCard);
+    return;
+  }
+  const { name, desc, pop, overallScore, scores } = cityData;
+  const { src, photographer, originSrc } = imageData;
+
+  // Create DOM Nodes
   const cityCard = document.createElement("div");
   const cityInfo = document.createElement("div");
   const cityScores = document.createElement("div");
-
   const title = document.createElement("h2");
   const population = document.createElement("p");
   const description = document.createElement("p");
-  const cityScore = document.createElement("h4");
+  const cityScore = document.createElement("p");
+
+  const imgWrapper = document.createElement("div");
+  const img = document.createElement("img");
+  const imgCitation1 = document.createElement("span");
+  const imgCitation2 = document.createElement("span");
 
   cityCard.id = "city-card";
   cityInfo.id = "city-info";
-  cityScores.id = cityScores;
+  cityScores.id = "city-scores";
 
-  try {
-    const qualityOfLifeScores = qualityLife["categories"];
+  img.src = src;
 
-    qualityOfLifeScores.map((score) => {
-      const scoreData = document.createElement("p");
+  //Inject info into DOM elements
+  title.textContent = name;
+  population.textContent = `Total Population: ${pop}`;
+  description.textContent = `Description Summary: ${desc}`;
+  cityScore.textContent = `Aggregate city score: ${overallScore}/100`;
 
-      scoreData.textContent = `${score.name}: ${Math.round(
-        score.score_out_of_10
-      )}/10`;
+  imgCitation1.textContent = `Photographer: ${photographer}`;
+  imgCitation2.textContent = `Origin: ${originSrc}`;
 
-      cityScores.append(scoreData);
-    });
+  //Append DOM elements to parent and iterate scores data
+  scores.map((score) => {
+    const scoreData = document.createElement("p");
+    scoreData.textContent = `${score.name}: ${Math.round(
+      score.score_out_of_10
+    )}/10`;
+    cityScores.append(scoreData);
+  });
+  cityInfo.append(title, description, population);
+  cityScores.append(cityScore);
+  cityCard.append(cityInfo, cityScores);
 
-    title.textContent = data.full_name;
-    population.textContent = `Total Population: ${data.population}`;
-    description.textContent = qualityLife.summary.replace(/<[^>]+>/g, "");
-    cityScore.textContent = `Aggregate city score: ${Math.round(
-      qualityLife.teleport_city_score
-    )}/100`;
+  imgWrapper.append(img, imgCitation1, imgCitation2);
 
-    cityInfo.append(title, description, population);
-    cityScores.append(cityScore);
-    cityCard.append(cityInfo, cityScores);
-    location.append(cityCard);
-  } catch {
-    const sorryMessage =
-      "Sorry, no quality of life data currently exists for this city";
-    cityInfo.append(sorryMessage);
-    cityCard.append(cityInfo);
-    location.append(cityCard);
-  }
+  cardsWrapper.append(imgWrapper, cityCard);
 }
 
 function handleImgData(data) {
