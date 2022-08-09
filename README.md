@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to NomadRank 👋</h1>
+<h1 align="center">Welcome to NomadList 👋</h1>
 <p>
 </p>
 

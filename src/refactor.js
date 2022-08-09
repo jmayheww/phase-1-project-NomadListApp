@@ -36,7 +36,7 @@ const DOM_MAP = {
     wrap: cityWrapper,
     drop: cityDropDown,
   },
-  title: {
+  cards: {
     wrap: cardWrapper,
   },
 };
@@ -52,8 +52,10 @@ const getAPIURL = {
   city: (country) =>
     `${rootURL}/cities?search=${country}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`,
 
-  title: (city) =>
+  cityInfo: (city) =>
     `${rootURL}/cities/?search=${city}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`,
+
+  image: (citySlug) => `${rootURL}/urban_areas/slug:${citySlug}/images/`,
 };
 
 function getAPIData(URL) {
@@ -74,21 +76,47 @@ const parseAPIData = {
       "city:item"
     ];
   },
-  qualityLife: (data) => {
+  cityData: (data) => {
+    const CITY_ITEM =
+      data["_embedded"]["city:search-results"][0]["_embedded"]["city:item"];
+
+    const name = CITY_ITEM["full_name"];
+    const pop = CITY_ITEM["population"];
+
     try {
-      const cityLifeScores =
-        data["_embedded"]["city:search-results"][0]["_embedded"]["city:item"][
-          "_embedded"
-        ]["city:urban_area"]["_embedded"]["ua:scores"];
-      return cityLifeScores;
-    } catch {
-      console.log(
-        "Sorry, no quality of life data currently exists for this city"
+      const URBAN_AREA = CITY_ITEM["_embedded"]["city:urban_area"]["_embedded"];
+
+      const scores = URBAN_AREA["ua:scores"]["categories"];
+      scores.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+      const overAllScore = Math.round(
+        URBAN_AREA["ua:scores"]["teleport_city_score"]
       );
+      const description = URBAN_AREA["ua:scores"]["summary"].replace(
+        /<[^>]+>/g,
+        ""
+      );
+
+      return { name, pop, description, scores, overAllScore };
+    } catch {
+      const missingDataMessage =
+        "Sorry, no quality of life data currently exists for this city.";
+
+      return { name, pop, missingDataMessage };
     }
   },
+  imgSlug: (data) => {
+    return data._embedded["city:search-results"][0]["_embedded"]["city:item"][
+      "_embedded"
+    ]["city:urban_area"]["slug"];
+  },
   image: (data) => {
-    return data["photos"][0];
+    const IMAGE_DATA = data["photos"][0];
+
+    const src = IMAGE_DATA["image"].web;
+    const photographer = IMAGE_DATA["attribution"].photographer;
+    const originSrc = IMAGE_DATA["attribution"].source;
+    return { src, photographer, originSrc };
   },
 };
 
