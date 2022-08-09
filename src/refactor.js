@@ -92,10 +92,8 @@ const parseAPIData = {
       const overAllScore = Math.round(
         URBAN_AREA["ua:scores"]["teleport_city_score"]
       );
-      const description = URBAN_AREA["ua:scores"]["summary"].replace(
-        /<[^>]+>/g,
-        ""
-      );
+
+      const desc = URBAN_AREA["ua:scores"]["summary"].replace(/<[^>]+>/g, "");
 
       return { name, pop, desc, scores, overAllScore };
     } catch {
@@ -106,9 +104,13 @@ const parseAPIData = {
     }
   },
   imgSlug: (data) => {
-    return data._embedded["city:search-results"][0]["_embedded"]["city:item"][
-      "_embedded"
-    ]["city:urban_area"]["slug"];
+    try {
+      return data._embedded["city:search-results"][0]["_embedded"]["city:item"][
+        "_embedded"
+      ]["city:urban_area"]["slug"];
+    } catch {
+      return "no-image";
+    }
   },
   image: (data) => {
     try {
@@ -162,21 +164,21 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
     const population = document.createElement("p");
     const description = document.createElement("p");
     title.innerText = name;
-    population.innerText = pop;
+    population.innerText = `Total population: ${pop}`;
     description.innerText = missingDataMessage;
 
-    const missingImageData = imageData;
+    const missingImageData = imageData.missingImageData;
 
     const imgWrapper = document.createElement("div");
-    const img = document.createElement("img");
-    img.textContent = missingImageData;
-    imgWrapper.append(img);
+    const imgMessage = document.createElement("p");
+    imgMessage.textContent = missingImageData;
+    imgWrapper.append(imgMessage);
 
     cityCard.append(title, population, description);
     cardsWrapper.append(imgWrapper, cityCard);
     return;
   }
-  const { name, desc, pop, overallScore, scores } = cityData;
+  const { name, desc, pop, overAllScore, scores } = cityData;
   const { src, photographer, originSrc } = imageData;
 
   // Create DOM Nodes
@@ -203,7 +205,7 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
   title.textContent = name;
   population.textContent = `Total Population: ${pop}`;
   description.textContent = `Description Summary: ${desc}`;
-  cityScore.textContent = `Aggregate city score: ${overallScore}/100`;
+  cityScore.textContent = `Aggregate city score: ${overAllScore}/100`;
 
   imgCitation1.textContent = `Photographer: ${photographer}`;
   imgCitation2.textContent = `Origin: ${originSrc}`;
@@ -250,35 +252,54 @@ function locationSelectedEventHandler(locationType, event) {
     });
 }
 
-function handleCityCards(locationType1, locationType2, event) {
-  let selection = event.target.value;
+function citySelectedEventHandler(event) {
+  let selectedCityName = event.target.value;
 
-  const url = getAPIURL[locationType1](selection);
+  const url = getAPIURL["cityInfo"](selectedCityName);
 
-  getAPIData(url).then((data) => {
-    const titleList = parseAPIData[locationType1](data);
-    const qualityLife = parseAPIData[locationType2](data);
-    handleImgData(data);
-    createCityCard(titleList, qualityLife, DOM_MAP[locationType1].wrap);
-  });
+  getAPIData(url)
+    .then((ctyData) => {
+      const cityData = parseAPIData["cityData"](ctyData);
+
+      const imgSlug = parseAPIData["imgSlug"](ctyData);
+
+      if (imgSlug === "no-image") {
+        const imageData = {
+          missingImageData: "Sorry, no image data currently exists for this city.",
+        };
+        renderCityCard(cityData, imageData, DOM_MAP["cards"].wrap);
+        return;
+      }
+      const imgUrl = getAPIURL["image"](imgSlug);
+
+      getAPIData(imgUrl)
+        .then((imgData) => {
+          const imageData = parseAPIData["image"](imgData);
+
+          return renderCityCard(cityData, imageData, DOM_MAP["cards"].wrap);
+        })
+        .catch((err) => console.log(`Error fetching image data: `, err));
+    })
+    .catch((err) => console.log(`Error fetching city data: `, err));
 }
 
 // EVENT LISTENERS ----------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  dropDownEventHandler("continent");
+  //fetching continent data from API and appending to DOM
+  locationSelectedEventHandler("continent");
 });
 
 continentDropDown.addEventListener("change", (event) => {
-  dropDownEventHandler("country", event);
+  locationSelectedEventHandler("country", event);
 });
 
 countryDropDown.addEventListener("change", (event) => {
-  dropDownEventHandler("city", event);
+  locationSelectedEventHandler("city", event);
 });
 
 cityDropDown.addEventListener("change", (event) => {
-  handleCityCards("title", "qualityLife", event);
+  citySelectedEventHandler(event);
 });
 
 // const selection = event.target.value;
