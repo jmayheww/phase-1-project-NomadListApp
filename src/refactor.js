@@ -177,19 +177,28 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
     const title = document.createElement("h2");
     const population = document.createElement("p");
     const description = document.createElement("p");
+    const imgWrapper = document.createElement("div");
+    const imgMessage = document.createElement("p");
+    const resetButton = document.createElement("button");
+
+    resetButton.classList = "reset-button";
+
     title.innerText = name;
     population.innerText = `Total population: ${pop}`;
     description.innerText = missingDataMessage;
 
     const missingImageData = imageData.missingImageData;
-
-    const imgWrapper = document.createElement("div");
-    const imgMessage = document.createElement("p");
     imgMessage.textContent = missingImageData;
-    imgWrapper.append(imgMessage);
 
+    resetButton.textContent = "Reset Selection";
+
+    resetButton.addEventListener("click", (event) => {
+      resetSelectionEventHandler(event);
+    });
+
+    imgWrapper.append(imgMessage);
     cityCard.append(title, population, description);
-    cardsWrapper.append(imgWrapper, cityCard);
+    cardsWrapper.append(imgWrapper, cityCard, resetButton);
     return;
   }
   const { name, desc, pop, overAllScore, scores } = cityData;
@@ -209,17 +218,21 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
   const imgCitation1 = document.createElement("p");
   const imgCitation2 = document.createElement("p");
 
-  cityCard.id = "city-card";
-  cityInfo.id = "city-info";
-  cityScores.id = "city-scores";
-  description.id = "description";
-  cityScore.id = "aggregate-score";
+  const resetButton = document.createElement("button");
+
+  cityCard.classList = "city-card";
+  cityInfo.classList = "city-info";
+  cityScores.classList = "city-scores";
+  description.classList = "description";
+  cityScore.classList = "aggregate-score";
 
   img.src = src;
-  img.id = "city-image";
-  imgCitation1.classList = "citations"
+  img.classList = "city-image";
+  imgCitation1.classList = "citations";
   imgCitation2.classList = "citations";
-  imgWrapper.id = "image-wrapper";
+  imgWrapper.classList = "image-wrapper";
+
+  resetButton.classList = "reset-button";
 
   //Inject info into DOM elements
   title.textContent = name;
@@ -227,9 +240,15 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
   description.textContent = `Description Summary: ${desc}`;
   cityScore.textContent = `Aggregate city score: ${overAllScore}/100`;
 
-
   imgCitation1.textContent = `Photographer: ${photographer}`;
   imgCitation2.textContent = `Origin: ${originSrc}`;
+
+  resetButton.textContent = "Reset Selection";
+  // Add event listener to button
+
+  resetButton.addEventListener("click", (event) => {
+    resetSelectionEventHandler(event);
+  });
 
   //Append DOM elements to parent and iterate scores data
   scores.map((score) => {
@@ -244,7 +263,7 @@ function renderCityCard(cityData, imageData, cardsWrapper) {
 
   cityInfo.append(title, description, population);
   cityScores.append(cityScore);
-  cityCard.append(cityInfo, cityScores);
+  cityCard.append(cityInfo, cityScores, resetButton);
 
   cardsWrapper.append(imgWrapper, cityCard);
 }
@@ -316,6 +335,11 @@ function citySelectedEventHandler(event, domMapLocationValue) {
         .catch((err) => console.log(`Error fetching image data: `, err));
     })
     .catch((err) => console.log(`Error fetching city data: `, err));
+}
+
+function resetSelectionEventHandler(event) {
+  const buttonEl = event.target;
+  buttonEl.parentElement.innerHTML = "Please make another selection";
 }
 
 // EVENT LISTENERS ----------------------------------------------

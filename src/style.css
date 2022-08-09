@@ -15,6 +15,7 @@ h2 {
     align-items: center;
     justify-content: center;
 
+
 }
 
 #continents1,
@@ -31,6 +32,7 @@ h2 {
 
 }
 
+
 #city-cards {
     display: flex;
     position: relative;
@@ -38,6 +40,8 @@ h2 {
     margin: auto;
     padding-top: 2em;
     align-items: flex-start;
+    justify-content: center;
+
 
 }
 
@@ -49,16 +53,19 @@ h2 {
     padding-left: 2em;
 }
 
-#city-image {
+.city-image {
     width: 80%;
+    align-items: flex-start;
+    ;
     justify-content: flex-start;
 
 }
 
-#description,
-#city-image {
+.description {
     text-align: left;
     justify-content: flex-start;
+    align-items: flex-start;
+    width: 40em
 
 }
 
@@ -68,32 +75,24 @@ h2 {
 
 
 .scores {
+
     justify-content: flex-start;
-    text-align: justify;
+    text-align: left;
+    align-items: center;
     margin: 0;
 }
 
-#aggregate-score {
+.aggregate-score {
+    display: flex;
+    width: 100%;
+    display: flex;
+    align-items: left;
+    text-align: center;
+    justify-content: center;
     font-size: 1.5em;
     font-weight: bold;
 
 }
-
-
-/* #city-card-wrapper1 {
-    width: 50%;
-    margin: auto;
-    text-align: left;
-    align-items: left;
-
-}
-
-#city-card-wrapper2 {
-    width: 50%;
-    margin: auto;
-    text-align: left;
-    align-items: right;
-} */
 
 
 .citations {
@@ -101,4 +100,15 @@ h2 {
     align-content: left;
     margin: auto;
 
+}
+
+.reset-button {
+    display: flex;
+    width: 40em;
+    display: flex;
+    align-items: left;
+    text-align: center;
+    justify-content: center;
+    font-size: 1em;
+    font-weight: bold;
 }
