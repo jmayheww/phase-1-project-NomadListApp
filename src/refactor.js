@@ -13,8 +13,6 @@ const ISO_Map = {
 };
 
 // -----------------------------------------DOM-VARIABLES----------------------------
-const body = document.querySelector("body");
-const darkMode = document.querySelector("#dark-mode-button");
 
 const continentWrapper1 = document.querySelector("#continent-wrapper1");
 const countryWrapper1 = document.querySelector("#country-wrapper1");
@@ -344,24 +342,12 @@ function resetSelectionEventHandler(event) {
   buttonEl.parentElement.innerHTML = "Please make another selection";
 }
 
-function toggleDarkModeEventHandler() {
-  if ((body.classList = "default")) {
-    body.classList.replace("default", "dark-mode");
-  }
-
-
-}
-
 // EVENT LISTENERS ----------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
   //fetching continent data from API and appending to DOM
   locationSelectedEventHandler("continent", "drop1");
   locationSelectedEventHandler("continent", "drop2");
-});
-
-darkMode.addEventListener("click", () => {
-  toggleDarkModeEventHandler();
 });
 
 continentDropDown1.addEventListener("change", (event) => {
