@@ -25,9 +25,29 @@ The world is a vast and incredibly diverse place. This app makes it simple for u
 
 > ![image](./images/Markdown/continentgif.gif)
 
-2. ***You can specify the amount of calories and macros you want (must be a number):***
+2. ***Continue the search by selecting from a newly generated list of countries labeled 'Choose a country:'***
 
+> ![image](./images/Markdown/countryselection.gif)
 
+3. ***Finish the search by selecting a city from the newly generated list of cities labeled 'Choose a city:'***
+
+> ![image](./images/Markdown/cityselction.gif)
+
+4. ***View a newly created city profile card displaying a snapshot image of the city, full city name, summary description, population, as well as a full itemized listing of quality of life scores that culminates in an overall aggregate city score***
+
+> ![image](./images/Markdown/citycard.gif)
+
+5. ***Repeat the search process to select a second city and view its city profile alongside the first selection***
+
+> ![image](./images/Markdown/secondcity.gif)
+
+6. ***Click the 'Reset Selection' button beneath each card to reset your choice and make a new selection***
+
+> ![image](./images/Markdown/resetchoice.gif)
+
+7. ***(Optional) Click the 'Dark Mode' button to toggle between dark and light modes***
+
+> ![image](./images/Markdown/darkmodegif.gif)
 
 </p>
 
