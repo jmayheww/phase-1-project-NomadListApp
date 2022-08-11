@@ -1,5 +1,6 @@
 <h1 align="center">Welcome to NomadList 👋</h1>
 <p>
+
 # An intuitive city search and scoring app
 
 > Satisfy your wanderlust, find a global destination, and embark on your next digital nomad journey!
@@ -14,7 +15,7 @@ The world is a vast and incredibly diverse place. This app makes it simple for u
 
 ## Specific Features
 
-- Can search through hundreds of global destinations [teleport api](https://developers.teleport.org/)
+- Can search through hundreds of global destinations via [teleport api](https://developers.teleport.org/)
 - Can specify which continent and country you are interested in finding a city
 - Can view individuaized profiles of each city, replete with an itemized and aggregate scoring of the city based on different quality of life criteria
 - Can view two city profiles at the same time to enable easier comparison and highlight the contrast between different cities' quality of life scores
@@ -33,7 +34,7 @@ The world is a vast and incredibly diverse place. This app makes it simple for u
 
 > ![image](./images/Markdown/cityselction.gif)
 
-4. ***View a newly created city profile card that displays a snapshot image of the city, full city name, summary description of the city, city population, as well as a full itemized listing of different quality of life scores and an overall city score ***
+4. ***View a newly created city profile card that displays a snapshot image of the city, full city name, summary description of the city, city population, as well as a full itemized listing of different quality of life scores and an overall city score***
 
 > ![image](./images/Markdown/citycard.gif)
 
@@ -48,6 +49,13 @@ The world is a vast and incredibly diverse place. This app makes it simple for u
 7. ***(Optional) Click the 'Dark Mode' button to toggle between dark and light modes***
 
 > ![image](./images/Markdown/darkmodegif.gif)
+
+## Technologies Used
+
+* HTML
+* CSS
+* JavaScript
+* Teleport API
 
 </p>
 
