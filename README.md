@@ -23,7 +23,7 @@ The world is a vast and incredibly diverse place. This app makes it simple for u
 
 1. ***Start the search by selecting a continent from the dropdown menu labeled 'Choose a continent:'***
 
-> ![image](continentgif.gif)
+> ![image](../../../../../../mnt/c/Users/joshs/AppData/Local/Programs/Microsoft%20VS%20Code/c:/Users/joshs/Downloads/continentgif.gif)
 
 2. ***You can specify the amount of calories and macros you want (must be a number):***
 
