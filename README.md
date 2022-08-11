@@ -33,7 +33,7 @@ The world is a vast and incredibly diverse place. This app makes it simple for u
 
 > ![image](./images/Markdown/cityselction.gif)
 
-4. ***View a newly created city profile card displaying a snapshot image of the city, full city name, summary description, population, as well as a full itemized listing of quality of life scores that culminates in an overall aggregate city score***
+4. ***View a newly created city profile card that displays a snapshot image of the city, full city name, summary description of the city, city population, as well as a full itemized listing of different quality of life scores and an overall city score ***
 
 > ![image](./images/Markdown/citycard.gif)
 
