@@ -1,7 +1,8 @@
-// Variable Declarations and DOM Selectors------------------------------------------------------
+// -------------------------------------------VARIABLES-------------------------
+
 const rootURL = "https://api.teleport.org/api";
 
-const continentAbbreviations = {
+const ISO_Map = {
   Africa: "AF",
   Antarctica: "AN",
   Asia: "AS",
@@ -11,144 +12,365 @@ const continentAbbreviations = {
   "South America": "SA",
 };
 
-const dropdownContainer = document.querySelector("#dropdown-lists");
-const continentContainer = document.querySelector("#continent-selector");
-const selectContinent = document.querySelector("#continents");
+// -----------------------------------------DOM-VARIABLES----------------------------
 
-// DOM Interactions ----------------------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  getAPIData("continents", filterContinentData);
-  fetchCity();
-});
+const continentWrapper1 = document.querySelector("#continent-wrapper1");
+const countryWrapper1 = document.querySelector("#country-wrapper1");
+const cityWrapper1 = document.querySelector("#city-wrapper1");
 
-function fetchCity() {
-  fetch("https://api.teleport.org/api/cities/?search=Vietnam")
-  .then(resp => resp.json())
-  .then(data => console.log(data));
-}
-// Asynchronous Functions: Fetch Data from API --------------------------------------------
-function getAPIData(strDirectory, callbackFun) {
-  fetch(`${rootURL}/${strDirectory}/`)
-    .then((resp) => resp.json())
-    .then((data) => {
-      callbackFun(data);
-    });
-}
-// function getData(strDirectory, location) {
-//   return fetch(`${rootURL}/${strDirectory}/`)
-//   .then((resp) => resp.json())
-//   .then((data) => {
-//     return data["_links"][`${location}:items`]
-//   })
-// }
+const continentDropDown1 = document.querySelector("#continents1");
+const countryDropDown1 = document.querySelector("#countries1");
+const cityDropDown1 = document.querySelector("#cities1");
 
+const continentWrapper2 = document.querySelector("#continent-wrapper2");
+const countryWrapper2 = document.querySelector("#country-wrapper2");
+const cityWrapper2 = document.querySelector("#city-wrapper2");
 
-// console.log('getData: ', getData("continents/geonames:AF/countries", "country"));
-// Handle API Data ------------------------------------------------------------------------
+const continentDropDown2 = document.querySelector("#continents2");
+const countryDropDown2 = document.querySelector("#countries2");
+const cityDropDown2 = document.querySelector("#cities2");
 
-function filterContinentData(apiData) {
-  const continentList = apiData._links["continent:items"].map(
-    (cont) => cont.name
-  );
+const cardWrapper1 = document.querySelector("#city-card-wrapper1");
+const cardWrapper2 = document.querySelector("#city-card-wrapper2");
 
-  createAppendOptions(continentList, selectContinent);
-}
+const DOM_MAP = {
+  continent: {
+    wrap1: continentWrapper1,
+    drop1: continentDropDown1,
+    drop2: continentDropDown2,
+  },
+  country: {
+    wrap1: countryWrapper1,
+    drop1: countryDropDown1,
+    drop2: countryDropDown2,
+  },
+  city: {
+    wrap1: cityWrapper1,
+    drop1: cityDropDown1,
+    drop2: cityDropDown2,
+  },
+  cards: {
+    wrap1: cardWrapper1,
+    wrap2: cardWrapper2,
+  },
+};
 
-function createCountryList(apiData) {
-  const selectCountry = document.createElement("select");
+// -------------------------------------------API---------------------------------------------------
 
-  const countryList = apiData._links["country:items"].map(
-    (country) => country.name
-  );
+const getAPIURL = {
+  continent: () => `${rootURL}/continents`,
 
-  createDropdown("country", "countries", selectCountry);
+  country: (continent) =>
+    `${rootURL}/continents/geonames:${ISO_Map[continent]}/countries`,
 
-  createAppendOptions(countryList, selectCountry);
+  city: (country) =>
+    `${rootURL}/cities?search=${country}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`,
 
-  // Add Event Listener to Newly Created Country List
+  cityInfo: (city) =>
+    `${rootURL}/cities/?search=${city}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores`,
 
-  selectCountry.addEventListener("change", (event) => {
-    const countrySelection = event.target.value;
+  image: (citySlug) => `${rootURL}/urban_areas/slug:${citySlug}/images/`,
+};
 
-    const cityListURL = `cities/?search=${countrySelection}&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity`;
-
-    getAPIData(cityListURL, createCitySelection);
-  });
-}
-
-function createCitySelection(apiData) {
-  const selectCity = document.createElement("select");
-  console.log(apiData);
-  const citiesList = apiData["_embedded"]["city:search-results"]
-    .map((x) => {
-      return x["_embedded"]["city:item"]["name"];
-    })
-    .sort();
-
-  console.log("citiesList: ", citiesList);
-
-  createDropdown("city", "cities", selectCity);
-  createAppendOptions(citiesList, selectCity);
+function getAPIData(URL) {
+  return fetch(URL).then((resp) => resp.json());
 }
 
-// 'https://api.teleport.org/api/cities/?search=' + country + '&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity').then(function(data) {
-//       var cities = data['_embedded']['city:search-results'];
-//       cities.forEach(function(city) {
-//         var city = {
-//           country: country,
-//           fullName: city['_embedded']['city:item'].full_name,
-//           name: city['_embedded']['city:item'].name,
-//           population: city['_embedded']['city:item'].population
+const parseAPIData = {
+  continent: (data) =>
+    data["_links"]["continent:items"].map((location) => location.name),
+  country: (data) =>
+    data["_links"]["country:items"].map((location) => location.name),
+  city: (data) =>
+    data["_embedded"]["city:search-results"].map((location) => {
+      return location["_embedded"]["city:item"].name;
+    }),
+  title: (data) => {
+    return data["_embedded"]["city:search-results"][0]["_embedded"][
+      "city:item"
+    ];
+  },
+  cityData: (data) => {
+    const CITY_ITEM =
+      data["_embedded"]["city:search-results"][0]["_embedded"]["city:item"];
 
-// Create New Select Dropdown Lists -------------------------------------------------------------------------------
+    const name = CITY_ITEM["full_name"];
+    const pop = CITY_ITEM["population"];
 
-function createDropdown(target, id, selectEl) {
-  // const currentDropdowns = [];
-  // const currentDropdownSelectors = document
-  //   .querySelectorAll(".selectors")
-  //   .forEach((x) => {
-  //     currentDropdowns.push(x.id);
-  //   });
+    try {
+      const URBAN_AREA = CITY_ITEM["_embedded"]["city:urban_area"]["_embedded"];
 
-  // console.log("currentDropdowns: ", currentDropdowns);
-  // if (!currentDropdowns.includes(id)) {
-    const selectorContainer = document.createElement("div");
-    const selectorLabel = document.createElement("label");
-    const defaultOption = document.createElement("option");
+      const scores = URBAN_AREA["ua:scores"]["categories"];
+      scores.sort((a, b) => (a.name > b.name ? 1 : -1));
 
-    defaultOption.innerHTML = `Choose a ${target}`;
-    defaultOption.disabled = true;
-    defaultOption.selected = true;
+      const overAllScore = Math.round(
+        URBAN_AREA["ua:scores"]["teleport_city_score"]
+      );
 
-    selectorLabel.setAttribute("for", id);
-    selectEl.id = id;
-    selectEl.className = "selectors";
+      const desc = URBAN_AREA["ua:scores"]["summary"].replace(/<[^>]+>/g, "");
 
-    dropdownContainer.append(selectorContainer);
-    selectorContainer.append(selectorLabel);
-    selectorLabel.append(selectEl);
-    selectEl.appendChild(defaultOption);
+      return { name, pop, desc, scores, overAllScore };
+    } catch {
+      const missingDataMessage =
+        "Sorry, no other quality of life data currently exists for this city.";
+
+      return { name, pop, missingDataMessage };
+    }
+  },
+  imgSlug: (data) => {
+    try {
+      return data._embedded["city:search-results"][0]["_embedded"]["city:item"][
+        "_embedded"
+      ]["city:urban_area"]["slug"];
+    } catch {
+      return "no-image";
+    }
+  },
+  image: (data) => {
+    try {
+      const IMAGE_DATA = data["photos"][0];
+
+      const src = IMAGE_DATA["image"].web;
+      const photographer = IMAGE_DATA["attribution"].photographer;
+      const originSrc = IMAGE_DATA["attribution"].source;
+      return { src, photographer, originSrc };
+    } catch {
+      const missingImageData = "No image data currently exists for this city";
+      return missingImageData;
+    }
+  },
+};
+
+// DOM MANPIPULATION -------------------------------------------------------
+
+function resetDropDownOptions(dropdown) {
+  const defaultOption = dropdown.children[0];
+
+  defaultOption.selected = true;
+  dropdown.innerHTML = "";
+  dropdown.append(defaultOption);
+}
+
+function renderLocationData(list, dropDown) {
+  if (list.length < 1) {
+    list = ["No cities in this country..."];
   }
 
-
-// Create and Append Dropdown Selector Options ------------------------------------------------------------------------
-// arrStr must be clean, clear array containing strings
-function createAppendOptions(arrStr, parentEl) {
-  arrStr.forEach((str) => {
-    let option = document.createElement("option");
-
-    option.textContent = str;
-
-    parentEl.append(option);
+  dropDown.parentElement.classList.remove("hide");
+  //append options
+  list.forEach((opt) => {
+    const option = document.createElement("option");
+    option.innerText = opt;
+    dropDown.append(option);
   });
 }
 
-// Add Event Listeners -------------------------------------------------------------------------------------------------
+function renderCityCard(cityData, imageData, cardsWrapper) {
+  //clear previous content
+  cardsWrapper.innerHTML = "";
 
-selectContinent.addEventListener("change", (event) => {
-  const continentSelection = event.target.value;
+  //Handle missing data case
+  if (cityData.missingDataMessage || imageData.missingImageData) {
+    const { name, pop, missingDataMessage } = cityData;
 
-  const countryListURL = `continents/geonames:${continentAbbreviations[continentSelection]}/countries`;
+    const cityCard = document.createElement("div");
+    const title = document.createElement("h2");
+    const population = document.createElement("p");
+    const description = document.createElement("p");
+    const imgWrapper = document.createElement("div");
+    const imgMessage = document.createElement("p");
+    const resetButton = document.createElement("button");
 
-  getAPIData(countryListURL, createCountryList);
+    resetButton.classList = "reset-button";
+
+    title.innerText = name;
+    population.innerText = `Total population: ${pop}`;
+    description.innerText = missingDataMessage;
+
+    const missingImageData = imageData.missingImageData;
+    imgMessage.textContent = missingImageData;
+
+    resetButton.textContent = "Reset Selection";
+
+    resetButton.addEventListener("click", (event) => {
+      resetSelectionEventHandler(event);
+    });
+
+    imgWrapper.append(imgMessage);
+    cityCard.append(title, population, description);
+    cardsWrapper.append(imgWrapper, cityCard, resetButton);
+    return;
+  }
+  const { name, desc, pop, overAllScore, scores } = cityData;
+  const { src, photographer, originSrc } = imageData;
+
+  // Create DOM Nodes
+  const cityCard = document.createElement("div");
+  const cityInfo = document.createElement("div");
+  const cityScores = document.createElement("div");
+  const title = document.createElement("h2");
+  const population = document.createElement("p");
+  const description = document.createElement("p");
+  const cityScore = document.createElement("p");
+
+  const imgWrapper = document.createElement("div");
+  const img = document.createElement("img");
+  const imgCitation1 = document.createElement("p");
+  const imgCitation2 = document.createElement("p");
+
+  const resetButton = document.createElement("button");
+
+  cityCard.classList = "city-card";
+  cityInfo.classList = "city-info";
+  cityScores.classList = "city-scores";
+  description.classList = "description";
+  cityScore.classList = "aggregate-score";
+
+  img.src = src;
+  img.classList = "city-image";
+  imgCitation1.classList = "citations";
+  imgCitation2.classList = "citations";
+  imgWrapper.classList = "image-wrapper";
+
+  resetButton.classList = "reset-button";
+
+  //Inject info into DOM elements
+  title.textContent = name;
+  population.textContent = `Total Population: ${pop}`;
+  description.textContent = `Description Summary: ${desc}`;
+  cityScore.textContent = `Aggregate city score: ${overAllScore}/100`;
+
+  imgCitation1.textContent = `Photographer: ${photographer}`;
+  imgCitation2.textContent = `Origin: ${originSrc}`;
+
+  resetButton.textContent = "Reset Selection";
+  // Add event listener to button
+
+  resetButton.addEventListener("click", (event) => {
+    resetSelectionEventHandler(event);
+  });
+
+  //Append DOM elements to parent and iterate scores data
+  scores.map((score) => {
+    const scoreData = document.createElement("p");
+    scoreData.textContent = `${score.name}: ${Math.round(
+      score.score_out_of_10
+    )}/10`;
+    scoreData.classList = "scores";
+    cityScores.append(scoreData);
+  });
+  imgWrapper.append(img, imgCitation1, imgCitation2);
+
+  cityInfo.append(title, description, population);
+  cityScores.append(cityScore);
+  cityCard.append(cityInfo, cityScores);
+
+  cardsWrapper.append(imgWrapper, cityCard, resetButton);
+}
+
+function locationSelectedEventHandler(
+  locationType,
+  domMapLocationValue,
+  event
+) {
+  const needsInitLocation = typeof event === "object";
+
+  let selectedLocationName = needsInitLocation ? event.target.value : null;
+
+  if (selectedLocationName === "United States") {
+    selectedLocationName = "usa";
+  }
+  const url = needsInitLocation
+    ? getAPIURL[locationType](selectedLocationName)
+    : getAPIURL[locationType](); //continent;
+
+  getAPIData(url)
+    .then((data) => {
+      debugger
+      const locList = parseAPIData[locationType](data).sort();
+      if (needsInitLocation) {
+        resetDropDownOptions(DOM_MAP[locationType][domMapLocationValue]);
+      }
+      renderLocationData(locList, DOM_MAP[locationType][domMapLocationValue]);
+    })
+    .catch((err) => {
+      console.log(`Error fetching ${locationType} list: `, err);
+    });
+}
+
+function citySelectedEventHandler(event, domMapLocationValue) {
+  let selectedCityName = event.target.value;
+
+  const url = getAPIURL["cityInfo"](selectedCityName);
+
+  getAPIData(url)
+    .then((ctyData) => {
+      const cityData = parseAPIData["cityData"](ctyData);
+
+      const imgSlug = parseAPIData["imgSlug"](ctyData);
+
+      if (imgSlug === "no-image") {
+        const imageData = {
+          missingImageData:
+            "Sorry, no image data currently exists for this city.",
+        };
+        renderCityCard(
+          cityData,
+          imageData,
+          DOM_MAP["cards"][domMapLocationValue]
+        );
+        return;
+      }
+      const imgUrl = getAPIURL["image"](imgSlug);
+
+      getAPIData(imgUrl)
+        .then((imgData) => {
+          const imageData = parseAPIData["image"](imgData);
+
+          return renderCityCard(
+            cityData,
+            imageData,
+            DOM_MAP["cards"][domMapLocationValue]
+          );
+        })
+        .catch((err) => console.log(`Error fetching image data: `, err));
+    })
+    .catch((err) => console.log(`Error fetching city data: `, err));
+}
+
+function resetSelectionEventHandler(event) {
+  const buttonEl = event.target;
+  buttonEl.parentElement.innerHTML = "Please make another selection";
+}
+
+// EVENT LISTENERS ----------------------------------------------
+
+document.addEventListener("DOMContentLoaded", () => {
+  //fetching continent data from API and appending to DOM
+  locationSelectedEventHandler("continent", "drop1");
+  locationSelectedEventHandler("continent", "drop2");
+});
+
+continentDropDown1.addEventListener("change", (event) => {
+  locationSelectedEventHandler("country", "drop1", event);
+});
+
+countryDropDown1.addEventListener("change", (event) => {
+  locationSelectedEventHandler("city", "drop1", event);
+});
+
+cityDropDown1.addEventListener("change", (event) => {
+  citySelectedEventHandler(event, "wrap1");
+});
+
+continentDropDown2.addEventListener("change", (event) => {
+  locationSelectedEventHandler("country", "drop2", event);
+});
+
+countryDropDown2.addEventListener("change", (event) => {
+  locationSelectedEventHandler("city", "drop2", event);
+});
+
+cityDropDown2.addEventListener("change", (event) => {
+  citySelectedEventHandler(event, "wrap2");
 });
